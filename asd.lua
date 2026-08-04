@@ -1,12 +1,9 @@
---// Config
 const Delay = 0
-const RunNetworkTests = false -- Set to true to run request / WebSocket tests (may hang/crash offline)
+const RunNetworkTests = false 
 
---// Variables
 local Total, Passed, Undefined = 0, 0, 0
 const VENV = getfenv(0)
 
---// types
 type Function = (...unknown) -> ... unknown
 type Callback = () -> boolean|string
 
@@ -60,8 +57,6 @@ end
 		task.wait(Delay)
 	end
 
-	--// Crash tracing: write the current test name BEFORE running it.
-	--// After a crash, read "EnvCheck_crashlog.txt" - the last line is the culprit.
 	pcall(function()
 		if writefile then
 			writefile("EnvCheck_crashlog.txt", `RUNNING: {Name}`)
@@ -71,13 +66,11 @@ end
 
 	const CallSuccess, Return = pcall(Callback)
 
-	--// Unsuccessful
 	if not CallSuccess or Return ~= true then
 		warn("⛔",  Name, "failed:", Return)
 		return
 	end
 
-	--// Passed
 	Passed += 1
 	print("✅", Name)
 
@@ -85,13 +78,13 @@ end
 end
 
 @native const function TestGlobal(Global: string, Aliases: {string}, Callback: Callback)
-	--// Has global
+
 	if not VENV[Global] then 
 		warn("⛔", Global)
 		return 
 	end
 
-	--// Alias check
+
 	const MissingAliases = TestAliases(Aliases)
 	if #MissingAliases > 0 then
 		warn("⚠️", table.concat(MissingAliases, ", "))
@@ -123,12 +116,8 @@ Shit Environment Check
 	return
 end
 
---// Header
-PrinHeader()
 
---============================================================
---// Environment
---============================================================
+PrinHeader()
 
 Test("HttpGetAsync", function()
 	--// C closure test
@@ -141,7 +130,7 @@ Test("HttpGetAsync", function()
 		return "HttpGetAsync should differ from HttpGet"
 	end
 
-	--// Network checks (may hang/crash offline - gated behind RunNetworkTests)
+
 	if RunNetworkTests then
 		--// Field test
 		if pcall(function()
@@ -150,7 +139,7 @@ Test("HttpGetAsync", function()
 			return "Terrible HttpGetAsync field/hook 😭"
 		end
 
-		--// Return check
+
 		const Ok, Return = pcall(function()
 			return game:HttpGetAsync("https://google.com")
 		end)
@@ -171,7 +160,6 @@ Test("env.__newindex", function() -- Potassium used to fail this lmao
 	const New = getgenv().require
 	getgenv().require = Previous
 
-	--// Protected function swap
 	if New == Previous then
 		return "Value did not change for 'require'"
 	end
@@ -183,9 +171,7 @@ Test("env.script", function()
 	return typeof(script) == "Instance" and script.Parent == nil
 end)
 
---============================================================
---// Cache
---============================================================
+
 
 TestGlobal("cache.invalidate", {}, function()
 	const Container = Instance.new("Folder")
@@ -210,8 +196,7 @@ TestGlobal("cache.iscached", {}, function()
 end)
 
 TestGlobal("cache.replace", {}, function()
-	--// Use same-class instances: replacing across classes (Part <-> Fire)
-	--// causes type confusion / crashes on weaker cache implementations
+
 	const PartA = Instance.new("Part")
 	const PartB = Instance.new("Part")
 	PartB.Name = "Replacement"
@@ -247,9 +232,7 @@ TestGlobal("compareinstances", {}, function()
 	return true
 end)
 
---============================================================
---// Closures
---============================================================
+
 
 TestGlobal("checkcaller", {}, function()
 	if not checkcaller() then
@@ -275,8 +258,7 @@ TestGlobal("getcallingscript", {}, function()
 end)
 
 TestGlobal("getscriptclosure", {"getscriptfunction"}, function()
-	--// Use a safe, own ModuleScript instead of arbitrary CoreGui modules
-	--// (calling getscriptclosure on protected/core modules can crash the executor)
+
 	const Module = Instance.new("ModuleScript")
 	Module.Source = "return function() return true end"
 
@@ -289,16 +271,16 @@ TestGlobal("getscriptclosure", {"getscriptfunction"}, function()
 	if typeof(Closure) ~= "function" then
 		return "Did not return a function"
 	end
-	--// Do NOT call the returned closure (can be unsafe on some executors)
+
 	return true
 end)
 
 TestGlobal("hookfunction", {"replaceclosure"}, function()
-	--// Hook a harmless local function (safer than hooking hookfunction itself)
+
 	const function Original() return true end
 	const Ref = hookfunction(Original, function() return "abc" end)
 
-	--// Return check
+
 	if Original() ~= "abc" then
 		return "hookfunction did not change the return value"
 	end
@@ -306,7 +288,6 @@ TestGlobal("hookfunction", {"replaceclosure"}, function()
 		return "hookfunction did not return the original function"
 	end
 
-	--// Restore
 	if restorefunction then
 		pcall(restorefunction, Original)
 	else
@@ -353,8 +334,7 @@ TestGlobal("isexecutorclosure", {"checkclosure", "isourclosure"}, function()
 end)
 
 TestGlobal("loadstring", {}, function()
-	--// Removed dead getscriptbytecode(script) call: dumping the executor's own
-	--// script instance is a crash vector and had nothing to do with this test
+
 	const Func = loadstring("return ... + 1")
 	if typeof(Func) ~= "function" then
 		return "Failed to loadstring a simple string"
@@ -384,9 +364,7 @@ TestGlobal("newcclosure", {}, function()
 	return true
 end)
 
---============================================================
---// Console
---============================================================
+
 
 TestGlobal("rconsoleclear", {"consoleclear"}, function()
 	rconsoleclear()
@@ -395,7 +373,7 @@ end)
 
 TestGlobal("rconsolecreate", {"consolecreate"}, function()
 	rconsolecreate()
-	--// Behavior check: a created console must accept output without erroring
+
 	if rconsoleprint then
 		rconsoleprint("EnvCheck rconsolecreate test\n")
 	end
@@ -403,15 +381,14 @@ TestGlobal("rconsolecreate", {"consolecreate"}, function()
 end)
 
 TestGlobal("rconsoledestroy", {"consoledestroy"}, function()
-	--// Create before destroying: destroying a nonexistent console crashes some executors
+
 	if rconsolecreate then pcall(rconsolecreate) end
 	rconsoledestroy()
 	return true
 end)
 
 TestGlobal("rconsoleinput", {"consoleinput"}, function()
-	--// Cannot behavior-test: rconsoleinput blocks the thread until the user
-	--// types into the console. Existence-only by necessity.
+
 	return true
 end)
 
@@ -425,9 +402,7 @@ TestGlobal("rconsolesettitle", {"rconsolename", "consolesettitle"}, function()
 	return true
 end)
 
---============================================================
---// Crypt
---============================================================
+
 
 TestGlobal("crypt.base64encode", {"crypt.base64.encode", "crypt.base64_encode", "base64.encode", "base64_encode", "base64encode"}, function()
 	if crypt.base64encode("test") ~= "dGVzdA==" then
@@ -495,9 +470,7 @@ TestGlobal("crypt.hash", {}, function()
 	return true
 end)
 
---============================================================
---// Debug
---============================================================
+
 
 TestGlobal("debug.getconstant", {}, function()
 	const function Test() print("Hello, world!") end
@@ -627,9 +600,7 @@ TestGlobal("debug.setupvalue", {}, function()
 	return true
 end)
 
---============================================================
---// Filesystem
---============================================================
+
 
 TestGlobal("readfile", {}, function()
 	writefile("EnvCheck.txt", "success")
@@ -644,8 +615,7 @@ TestGlobal("writefile", {}, function()
 	if readfile("EnvCheck.txt") ~= "success" then
 		return "Failed to write to the file"
 	end
-	--// Note: extension check removed - writing a file without an extension
-	--// crashes some executors.
+
 	return true
 end)
 
@@ -693,7 +663,7 @@ TestGlobal("loadfile", {}, function()
 end)
 
 TestGlobal("dofile", {}, function()
-	--// Behavior check: dofile must actually execute the file's code
+
 	getgenv().__EnvCheckDofile = nil
 	writefile("EnvCheck_dofile.lua", "getgenv().__EnvCheckDofile = 'executed'")
 	pcall(dofile, "EnvCheck_dofile.lua")
@@ -761,9 +731,7 @@ TestGlobal("getcustomasset", {}, function()
 	return true
 end)
 
---============================================================
---// Input
---============================================================
+
 
 TestGlobal("isrbxactive", {"isgameactive"}, function()
 	if typeof(isrbxactive()) ~= "boolean" then
@@ -772,14 +740,11 @@ TestGlobal("isrbxactive", {"isgameactive"}, function()
 	return true
 end)
 
---// Behavior verification: fire synthetic input, then confirm the Roblox engine
---// actually received it via UserInputService. Requires the window to be focused;
---// if unfocused, tests pass as unverifiable (synthetic input is dropped by the OS).
 const UserInputService = game:GetService("UserInputService")
 
 const function VerifyInput(Fire: () -> (), Check: (InputObject) -> boolean): boolean|string
 	if isrbxactive and not isrbxactive() then
-		return true -- Window not focused: input cannot be delivered, skip verification
+		return true 
 	end
 
 	local Detected = false
@@ -823,7 +788,7 @@ TestGlobal("mouse1press", {}, function()
 		return Input.UserInputType == Enum.UserInputType.MouseButton1
 			and Input.UserInputState == Enum.UserInputState.Begin
 	end)
-	--// Always release so the button is not left held down
+
 	if mouse1release then pcall(mouse1release) end
 	return Result
 end)
@@ -870,7 +835,7 @@ TestGlobal("mouse2release", {}, function()
 end)
 
 TestGlobal("mousemoveabs", {}, function()
-	--// Move to (current position + offset) so the cursor is not thrown across the screen
+
 	const Position = UserInputService:GetMouseLocation()
 	return VerifyInput(function()
 		mousemoveabs(Position.X + 15, Position.Y + 15)
@@ -896,8 +861,7 @@ TestGlobal("mousescroll", {}, function()
 end)
 
 TestGlobal("keypress", {}, function()
-	--// F15 (VK 0x7E): a real key Roblox recognizes, but one that no game or
-	--// textbox reacts to - safe to press without side effects
+
 	const Result = VerifyInput(function()
 		keypress(0x7E)
 	end, function(Input)
@@ -919,12 +883,10 @@ TestGlobal("keyrelease", {}, function()
 	end)
 end)
 
---============================================================
---// Instances
---============================================================
+
 
 TestGlobal("fireclickdetector", {}, function()
-	--// Behavior check: the fired event must actually reach a connected handler
+
 	const Detector = Instance.new("ClickDetector")
 	local Clicked = false
 	const Connection = Detector.MouseClick:Connect(function()
@@ -933,7 +895,7 @@ TestGlobal("fireclickdetector", {}, function()
 
 	fireclickdetector(Detector, 0, "MouseClick")
 
-	--// Events may be deferred: give the engine a moment to dispatch
+
 	const Deadline = os.clock() + 0.5
 	while not Clicked and os.clock() < Deadline do
 		task.wait()
@@ -978,15 +940,14 @@ TestGlobal("getconnections", {}, function()
 	return true
 end)
 
---// DISABLED: gethiddenproperty on size_xml causes a native (C-level) crash on
---// this executor - pcall cannot catch it. Existence-only until it is fixed.
+
 TestGlobal("gethiddenproperty", {}, function()
-	return true -- Existence-only check (actual call crashes the executor)
+	return true 
 end)
 
---// DISABLED: sethiddenproperty uses the same hidden-property access path.
+
 TestGlobal("sethiddenproperty", {}, function()
-	return true -- Existence-only check (actual call crashes the executor)
+	return true 
 end)
 
 TestGlobal("gethui", {}, function()
@@ -1028,7 +989,7 @@ TestGlobal("setscriptable", {}, function()
 	const Fire = Instance.new("Fire")
 	const WasScriptable = setscriptable(Fire, "size_xml", true)
 	const NowScriptable = isscriptable(Fire, "size_xml")
-	--// Restore: leaving size_xml scriptable globally is a crash risk for later code
+
 	pcall(setscriptable, Fire, "size_xml", false)
 	if WasScriptable ~= false then
 		return "Did not return whether the property was scriptable"
@@ -1040,8 +1001,7 @@ TestGlobal("setscriptable", {}, function()
 end)
 
 TestGlobal("setrbxclipboard", {}, function()
-	--// Behavior check: must accept a valid rbxm/model data string without erroring.
-	--// Full verification (pasting into Studio) is impossible from a test.
+
 	const Ok, Err = pcall(setrbxclipboard, "<roblox version=\"4\"></roblox>")
 	if not Ok then
 		return "setrbxclipboard errored on valid model data: " .. tostring(Err)
@@ -1049,9 +1009,7 @@ TestGlobal("setrbxclipboard", {}, function()
 	return true
 end)
 
---============================================================
---// Metatable
---============================================================
+
 
 TestGlobal("getrawmetatable", {}, function()
 	const Metatable = {__metatable = "Locked!"}
@@ -1077,8 +1035,7 @@ end)
 TestGlobal("getnamecallmethod", {}, function()
 	local Method
 	local Ref
-	--// NOTE: never re-hook from inside a running hook - that crashes many executors.
-	--// The hook only records the method and forwards the call; restore happens outside.
+
 	Ref = hookmetamethod(game, "__namecall", function(...)
 		if not Method then Method = getnamecallmethod() end
 		return Ref(...)
@@ -1086,7 +1043,7 @@ TestGlobal("getnamecallmethod", {}, function()
 
 	const CallOk = pcall(function() return game:GetService("Lighting") end)
 
-	--// Restore the original exactly once, outside the hook
+
 	if Ref then pcall(hookmetamethod, game, "__namecall", Ref) end
 
 	if not CallOk then
@@ -1127,9 +1084,7 @@ TestGlobal("setreadonly", {}, function()
 	return true
 end)
 
---============================================================
---// Miscellaneous
---============================================================
+
 
 TestGlobal("identifyexecutor", {"getexecutorname"}, function()
 	const Name, Version = identifyexecutor()
@@ -1167,8 +1122,7 @@ TestGlobal("messagebox", {}, function()
 end)
 
 TestGlobal("queue_on_teleport", {"queueonteleport"}, function()
-	--// Behavior check: queueing must not error. Full verification would require
-	--// an actual teleport, which cannot be done in a test.
+
 	queue_on_teleport("-- EnvCheck queue_on_teleport test")
 	if clearteleportqueue then
 		pcall(clearteleportqueue)
@@ -1178,7 +1132,7 @@ end)
 
 TestGlobal("request", {"http.request", "http_request"}, function()
 	if not RunNetworkTests then
-		return true -- Network tests disabled (set RunNetworkTests = true to enable)
+		return true 
 	end
 	const Response = request({
 		Url = "https://httpbin.org/user-agent",
@@ -1198,7 +1152,7 @@ TestGlobal("request", {"http.request", "http_request"}, function()
 end)
 
 TestGlobal("setclipboard", {"toclipboard"}, function()
-	--// Behavior check: write to the clipboard and, if a getter exists, read it back
+	
 	setclipboard("EnvCheck setclipboard test")
 	const Getter = getclipboard or getrbxclipboard
 	if Getter then
@@ -1210,7 +1164,7 @@ TestGlobal("setclipboard", {"toclipboard"}, function()
 	return true
 end)
 
---// Measures average FPS over ~20 frames
+
 const function MeasureFPS(): number
 	const Start = os.clock()
 	local Frames = 0
@@ -1222,13 +1176,13 @@ const function MeasureFPS(): number
 end
 
 TestGlobal("setfpscap", {}, function()
-	--// Behavior check: cap to 30 and verify real framerate drops accordingly
+	
 	setfpscap(30)
-	task.wait(0.2) -- Let the cap settle
+	task.wait(0.2) 
 	const Capped = MeasureFPS()
-	setfpscap(0) -- Restore uncapped (0/1000 = unlimited on most executors)
+	setfpscap(0) 
 
-	--// Tolerance: timers are imprecise, accept anything below ~45 as "capped to 30"
+	
 	if Capped > 45 then
 		return `FPS cap of 30 had no effect (measured ~{math.round(Capped)} FPS)`
 	end
@@ -1236,7 +1190,7 @@ TestGlobal("setfpscap", {}, function()
 end)
 
 TestGlobal("getfpscap", {}, function()
-	--// Behavior check: set a cap, read it back
+	
 	if not setfpscap then
 		const Value = getfpscap()
 		if typeof(Value) ~= "number" then
@@ -1256,9 +1210,7 @@ TestGlobal("getfpscap", {}, function()
 	return true
 end)
 
---============================================================
---// Scripts
---============================================================
+
 
 TestGlobal("getgc", {}, function()
 	const GC = getgc()
@@ -1306,15 +1258,14 @@ TestGlobal("getrunningscripts", {}, function()
 	return true
 end)
 
---// DISABLED: getscriptbytecode causes a native (C-level) crash on this executor
---// even on safe replicated scripts - pcall cannot catch it. Only checks existence.
+
 TestGlobal("getscriptbytecode", {"dumpstring"}, function()
-	return true -- Existence-only check (actual call crashes the executor)
+	return true 
 end)
 
---// DISABLED: getscripthash dumps bytecode internally - same native crash path.
+
 TestGlobal("getscripthash", {}, function()
-	return true -- Existence-only check (actual call crashes the executor)
+	return true 
 end)
 
 TestGlobal("getscripts", {}, function()
@@ -1331,7 +1282,7 @@ end)
 TestGlobal("getsenv", {}, function()
 	const Player = game:GetService("Players").LocalPlayer
 	if not Player then return true end
-	--// Do NOT use CharacterAdded:Wait() - it hangs forever if the character never spawns
+	
 	const Character = Player.Character
 	if not Character then return true end
 	const Script = Character:FindFirstChild("Animate")
@@ -1354,7 +1305,7 @@ TestGlobal("setthreadidentity", {"setidentity", "setthreadcontext"}, function()
 	const Previous = getthreadidentity()
 	setthreadidentity(3)
 	const Changed = getthreadidentity() == 3
-	--// Always restore the original identity to avoid breaking later tests
+	
 	setthreadidentity(Previous)
 	if not Changed then
 		return "Did not set the thread identity"
@@ -1362,9 +1313,7 @@ TestGlobal("setthreadidentity", {"setidentity", "setthreadcontext"}, function()
 	return true
 end)
 
---============================================================
---// Drawing
---============================================================
+
 
 TestGlobal("Drawing", {}, function()
 	const Line = Drawing.new("Line")
@@ -1386,7 +1335,7 @@ TestGlobal("Drawing.new", {}, function()
 	Drawing.Visible = false
 	const CanClear = pcall(function() Drawing:Destroy() end)
 	if not CanClear then
-		--// pcall: Remove after a failed/partial Destroy can double-free on some executors
+
 		pcall(function() Drawing:Remove() end)
 		return "Drawing:Destroy() should exist and not error"
 	end
@@ -1401,7 +1350,7 @@ TestGlobal("Drawing.Fonts", {}, function()
 end)
 
 TestGlobal("isrenderobj", {}, function()
-	--// Keep invisible: rendering an Image with no Data crashes some executors
+
 	const Drawing = Drawing.new("Image")
 	Drawing.Visible = false
 	if not isrenderobj(Drawing) then
@@ -1440,9 +1389,6 @@ TestGlobal("cleardrawcache", {}, function()
 	return true
 end)
 
---============================================================
---// WebSocket
---============================================================
 
 TestGlobal("WebSocket", {}, function()
 	if typeof(WebSocket) ~= "table" and typeof(WebSocket) ~= "function" then
@@ -1456,7 +1402,7 @@ end)
 
 TestGlobal("WebSocket.connect", {}, function()
 	if not RunNetworkTests then
-		return true -- Network tests disabled (set RunNetworkTests = true to enable)
+		return true 
 	end
 	const Types = {Send = "function", Close = "function", OnMessage = {"table", "userdata"}, OnClose = {"table", "userdata"}}
 	const Ok, Socket = pcall(function()
@@ -1474,5 +1420,5 @@ TestGlobal("WebSocket.connect", {}, function()
 	return true
 end)
 
---// Done
+
 PrintSummary()
