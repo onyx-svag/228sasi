@@ -1,0 +1,496 @@
+-- ============================================================
+-- CRIMINAL FARM MODULE (Route Autofarm)
+-- Реконструировано из Pastebin (BjUC6X2b)
+-- ============================================================
+
+local RunService       = game:GetService("RunService")
+local Players          = game:GetService("Players")
+local CoreGui          = game:GetService("CoreGui")
+local VirtualUser      = game:GetService("VirtualUser")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local LocalPlayer = Players.LocalPlayer
+
+-- Удаление старого UI
+local existingUI = CoreGui:FindFirstChild("RouteAutofarmUI")
+if existingUI then
+    existingUI:Destroy()
+end
+
+-- ============================================================
+-- СОЗДАНИЕ UI
+-- ============================================================
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "RouteAutofarmUI"
+screenGui.Parent = CoreGui
+screenGui.ResetOnSpawn = false
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 340, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -170, 0.85, -100)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+mainFrame.BackgroundTransparency = 0.15
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = mainFrame
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 30)
+titleLabel.Text = "🚑 Criminal Farm"
+titleLabel.TextColor3 = Color3.fromRGB(255, 180, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.TextSize = 18
+titleLabel.Parent = mainFrame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 22)
+statusLabel.Position = UDim2.new(0, 0, 0.22, 0)
+statusLabel.Text = "🔴 DISABLED"
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Font = Enum.Font.SourceSansBold
+statusLabel.TextSize = 13
+statusLabel.Parent = mainFrame
+
+-- Кнопка Discord
+local discordBtn = Instance.new("TextButton")
+discordBtn.Size = UDim2.new(0.8, 0, 0, 32)
+discordBtn.Position = UDim2.new(0.1, 0, 0.4, 0)
+discordBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+discordBtn.Text = "💬 Discord"
+discordBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+discordBtn.TextScaled = true
+discordBtn.Font = Enum.Font.SourceSansBold
+discordBtn.Parent = mainFrame
+
+local discordCorner = Instance.new("UICorner")
+discordCorner.CornerRadius = UDim.new(0, 8)
+discordCorner.Parent = discordBtn
+
+discordBtn.MouseButton1Click:Connect(function()
+    pcall(function()
+        if setclipboard then
+            setclipboard("https://discord.gg/gGg7gy9QAt")
+        end
+    end)
+    statusLabel.Text = "✅ Link copied!"
+    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    discordBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    task.wait(1.5)
+    discordBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+    if isFarming then
+        statusLabel.Text = "🟢 FARMING"
+        statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    else
+        statusLabel.Text = "🔴 DISABLED"
+        statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    end
+end)
+
+-- Кнопка Start/Stop
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Size = UDim2.new(0.8, 0, 0, 40)
+toggleBtn.Position = UDim2.new(0.1, 0, 0.58, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+toggleBtn.Text = "▶ START"
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.TextScaled = true
+toggleBtn.Font = Enum.Font.SourceSansBold
+toggleBtn.Parent = mainFrame
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 8)
+toggleCorner.Parent = toggleBtn
+
+-- ============================================================
+-- ANTI-AFK
+-- ============================================================
+local antiAfkConn
+print("[Anti-AFK] запуск...")
+if antiAfkConn then antiAfkConn:Disconnect() end
+
+pcall(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+antiAfkConn = RunService.Heartbeat:Connect(function()
+    pcall(function()
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end)
+end)
+
+LocalPlayer.Idled:Connect(function()
+    pcall(function()
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end)
+end)
+print("[Anti-AFK] запущен!")
+
+-- ============================================================
+-- ПОЛУЧЕНИЕ REMOTES И ОБЪЕКТОВ
+-- ============================================================
+local purchaseRemote, launderRemote
+local fakeDiamondRingItem, launderPromptPart, sellerNPC
+
+pcall(function()
+    local remotes = ReplicatedStorage:WaitForChild("__remotes", 5)
+    if remotes then
+        purchaseRemote = remotes:WaitForChild("WorldBuyableItemService", 5):WaitForChild("PurchaseWorldBuyableItem", 5)
+        launderRemote = remotes:WaitForChild("SmuggleService", 5):WaitForChild("LaunderBriefcase", 5)
+    end
+end)
+
+pcall(function()
+    fakeDiamondRingItem = workspace:WaitForChild("WorldBuyableItems", 5):WaitForChild("Fake Diamond Ring", 5)
+    launderPromptPart = workspace:WaitForChild("LaunderPrompts", 5):WaitForChild("LaunderTrigger", 5):WaitForChild("PromptPart", 5)
+end)
+
+-- ============================================================
+-- КООРДИНАТЫ МАРШРУТОВ
+-- ============================================================
+local START_POS = Vector3.new(6820.65, 17.39, 21.51)
+local POS_2 = Vector3.new(6818.39, 17.19, 149.32)
+local POS_3 = Vector3.new(198.06, 17.19, 149.16)
+local POS_4 = Vector3.new(29.4, 17.19, 367.16)
+local POS_5 = Vector3.new(-7.52, 27.8, 388.48)
+local POS_6 = Vector3.new(-45.08, 38.41, 410.16)
+local SELL_POS = Vector3.new(-82.38, 49.22, 431.76)
+local POS_8 = Vector3.new(6839.92, 17.19, 22.33)
+local POS_9 = Vector3.new(6844.71, 17.39, -49.4)
+local POS_10 = Vector3.new(6805.63, 17.41, -34.47)
+
+-- Фаза 1: Покупка -> Продажа
+local ROUTE_BUY_SELL = { START_POS, POS_2, POS_3, POS_4, POS_5, POS_6, SELL_POS }
+-- Фаза 2: Продажа -> Отмывка
+local ROUTE_SELL_LAUNDER = { SELL_POS, POS_4, POS_3, POS_2, START_POS, POS_8, POS_9, POS_10 }
+-- Фаза 3: Отмывка -> Старт
+local ROUTE_LAUNDER_START = { POS_10, POS_9, POS_8, START_POS }
+
+-- ============================================================
+-- СОСТОЯНИЯ ФАРМА
+-- ============================================================
+getgenv().NoclipParts = getgenv().NoclipParts or {}
+
+-- Отключение старых коннектов
+if getgenv().routeConnection then getgenv().routeConnection:Disconnect() end
+if getgenv().noclippingConnection then getgenv().noclippingConnection:Disconnect() end
+
+local isFarming = false
+local isMoving = true
+local isRecovering = false
+local isFirstBuy = true
+
+local currentRoute = ROUTE_BUY_SELL
+local currentPhase = 1
+local waypointIndex = 1
+
+local SPEED = 27
+local OFF_ROUTE_THRESHOLD = 20
+local STUCK_TIMEOUT = 60
+local PHASE_TIMEOUT = 180
+
+local stuckTimer = 0
+local phaseTimer = 0
+
+-- ============================================================
+-- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+-- ============================================================
+
+-- Активация ProximityPrompt
+local function triggerPrompt(prompt)
+    if not prompt then return false end
+    pcall(function()
+        prompt:InputHoldBegin(LocalPlayer)
+        task.wait(0.1)
+        prompt:InputHoldEnd(LocalPlayer)
+    end)
+    return true
+end
+
+-- Продажа товара
+local function sellItems()
+    local prompt = workspace.NPC.Seller2.HumanoidRootPart.SellSmuggledGoodsPrompt
+    if prompt then
+        pcall(function()
+            prompt:InputHoldBegin(LocalPlayer)
+            task.wait(0.5)
+            prompt:InputHoldEnd(LocalPlayer)
+        end)
+        task.wait(0.3)
+        pcall(function()
+            prompt:InputHoldBegin(LocalPlayer)
+            task.wait(0.5)
+            prompt:InputHoldEnd(LocalPlayer)
+        end)
+    end
+end
+
+-- Покупка колец
+local function buyItems()
+    if fakeDiamondRingItem and purchaseRemote then
+        for _ = 1, 10 do
+            if not isFarming then break end
+            pcall(function()
+                purchaseRemote:FireServer(fakeDiamondRingItem)
+            end)
+            task.wait(0.1)
+        end
+    end
+end
+
+-- Отмывка денег
+local function launderMoney()
+    if launderPromptPart and launderRemote then
+        for _ = 1, 10 do
+            if not isFarming then break end
+            pcall(function()
+                launderRemote:FireServer(launderPromptPart)
+            end)
+            task.wait(0.1)
+        end
+    end
+end
+
+-- Перемещение к точке
+local function moveTowards(part, targetPos)
+    if not part then return end
+    local distance = (targetPos - part.Position).Magnitude
+    while distance > 0.1 do
+        if not isFarming then break end
+        local dt = RunService.Heartbeat:Wait()
+        part.CFrame = part.CFrame + (targetPos - part.Position).Unit * math.min(SPEED * dt * 8, distance)
+        distance = (targetPos - part.Position).Magnitude
+    end
+end
+
+-- Аварийное восстановление (если застрял)
+local function recover()
+    if isRecovering then return end
+    isRecovering = true
+    isMoving = false
+    stuckTimer = 0
+    phaseTimer = os.clock()
+    
+    local char = LocalPlayer.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if root then
+        moveTowards(root, START_POS)
+    end
+    
+    currentRoute = ROUTE_BUY_SELL
+    currentPhase = 1
+    waypointIndex = 1
+    isFirstBuy = false
+    isRecovering = false
+    isMoving = true
+end
+
+-- Остановка фарма
+local function stopFarm()
+    isFarming = false
+    isMoving = false
+    isRecovering = false
+    stuckTimer = 0
+    phaseTimer = 0
+    
+    toggleBtn.Text = "▶ START"
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+    statusLabel.Text = "🔴 DISABLED"
+    statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    
+    if getgenv().routeConnection then getgenv().routeConnection:Disconnect() end
+    if getgenv().noclippingConnection then getgenv().noclippingConnection:Disconnect() end
+    
+    task.wait(0.1)
+    
+    -- Восстановление коллизий
+    for part, _ in pairs(getgenv().NoclipParts) do
+        if typeof(part) == "Instance" and part:IsA("BasePart") and part.Parent then
+            part.CanCollide = true
+        end
+    end
+    getgenv().NoclipParts = {}
+end
+
+-- Запуск фарма
+local function startFarm()
+    isFarming = true
+    isMoving = false
+    isFirstBuy = true
+    currentRoute = ROUTE_BUY_SELL
+    currentPhase = 1
+    waypointIndex = 1
+    
+    toggleBtn.Text = "⏹ STOP"
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    statusLabel.Text = "🟢 FARMING"
+    statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    
+    phaseTimer = os.clock()
+    
+    -- Noclip
+    getgenv().noclippingConnection = RunService.Stepped:Connect(function()
+        if isFarming and LocalPlayer.Character then
+            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                    getgenv().NoclipParts[part] = true
+                end
+            end
+        end
+    end)
+    
+    -- Логика маршрута
+    task.spawn(function()
+        while isFarming do
+            if isRecovering then
+                task.wait(0.5)
+            else
+                if os.clock() - phaseTimer > PHASE_TIMEOUT then
+                    task.spawn(recover)
+                    task.wait(1)
+                else
+                    local char = LocalPlayer.Character
+                    local root = char and char:FindFirstChild("HumanoidRootPart")
+                    if root then
+                        local targetPos = currentRoute[waypointIndex]
+                        local dist = (targetPos - root.Position).Magnitude
+                        
+                        if dist < 4 then
+                            phaseTimer = os.clock()
+                            
+                            if currentPhase == 1 then
+                                if waypointIndex == 1 then
+                                    if isFirstBuy then
+                                        isFirstBuy = false
+                                        isMoving = false
+                                        root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                                        print("[FARM] Покупка (FireServer)")
+                                        buyItems()
+                                        if isFarming then
+                                            waypointIndex = 2
+                                            isMoving = true
+                                            task.wait()
+                                        end
+                                    end
+                                elseif waypointIndex == #ROUTE_BUY_SELL then
+                                    isMoving = false
+                                    root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                                    print("[FARM] Продажа (2 нажатия)")
+                                    sellItems()
+                                    if isFarming then
+                                        currentRoute = ROUTE_SELL_LAUNDER
+                                        currentPhase = 2
+                                        waypointIndex = 2
+                                        isMoving = true
+                                    end
+                                elseif waypointIndex == 5 then
+                                    isMoving = false
+                                    root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                                    task.wait(0.2)
+                                    if isFarming then
+                                        waypointIndex = waypointIndex + 1
+                                        isMoving = true
+                                    end
+                                else
+                                    -- ИСПРАВЛЕНИЕ: Оригинальный скрипт не увеличивал индекс здесь, вызывая залипание.
+                                    waypointIndex = waypointIndex + 1
+                                end
+                            elseif currentPhase == 2 then
+                                if waypointIndex == #ROUTE_SELL_LAUNDER then
+                                    isMoving = false
+                                    root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                                    print("[FARM] Отмывка (FireServer)")
+                                    launderMoney()
+                                    if isFarming then
+                                        currentRoute = ROUTE_LAUNDER_START
+                                        currentPhase = 3
+                                        waypointIndex = 2
+                                        isMoving = true
+                                    end
+                                else
+                                    -- ИСПРАВЛЕНИЕ: То же самое для второй фазы.
+                                    waypointIndex = waypointIndex + 1
+                                end
+                            elseif currentPhase == 3 then
+                                if waypointIndex == #ROUTE_LAUNDER_START then
+                                    currentRoute = ROUTE_BUY_SELL
+                                    currentPhase = 1
+                                    waypointIndex = 1
+                                    isMoving = true
+                                else
+                                    -- ИСПРАВЛЕНИЕ: То же самое для третьей фазы.
+                                    waypointIndex = waypointIndex + 1
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait()
+        end
+    end)
+    
+    -- Движение и застревание
+    getgenv().routeConnection = RunService.Heartbeat:Connect(function(dt)
+        if not isFarming or isRecovering then return end
+        
+        local char = LocalPlayer.Character
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        
+        local targetPos = currentRoute[waypointIndex]
+        local prevPos = (waypointIndex > 1 and currentRoute[waypointIndex - 1]) or root.Position
+        
+        if isMoving then
+            -- Проекция текущей позиции на линию маршрута
+            local segmentVec = targetPos - prevPos
+            local pointVec = root.Position - prevPos
+            local segMagSq = segmentVec.Magnitude ^ 2
+            
+            local closestPoint = prevPos
+            if segMagSq > 0 then
+                local t = math.clamp(pointVec:Dot(segmentVec) / segMagSq, 0, 1)
+                closestPoint = prevPos + segmentVec * t
+            end
+            
+            local distToPath = (root.Position - closestPoint).Magnitude
+            
+            if distToPath > OFF_ROUTE_THRESHOLD then
+                if stuckTimer == 0 then stuckTimer = os.clock() end
+                if os.clock() - stuckTimer > STUCK_TIMEOUT then
+                    task.spawn(recover)
+                    return
+                end
+                
+                local moveDir = closestPoint - root.Position
+                if moveDir.Magnitude > 0.1 then
+                    char:TranslateBy(moveDir.Unit * SPEED * dt * 8)
+                end
+            else
+                stuckTimer = 0
+                char:TranslateBy((targetPos - root.Position).Unit * SPEED * dt * 8)
+            end
+        end
+    end)
+end
+
+-- Обработка кнопки
+toggleBtn.MouseButton1Click:Connect(function()
+    if isFarming then
+        stopFarm()
+    else
+        startFarm()
+    end
+end)
+
+return
