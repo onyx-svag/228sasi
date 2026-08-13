@@ -986,7 +986,7 @@ end
 -- --- Панель: Info ---
 local infoPanel = createPanel("panel-info", "Info",
     "https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/2139.png", "ℹ️")
-local infoSection = createSection(infoPanel, "Tylevelo", "Overview")
+local infoSection = createSection(infoPanel, "onyx", "Overview")
 addSectionHeader(infoPanel, "FEATURES", 4)
 addDescription(infoPanel,
     "• High-Quality Aimbot\n" ..
@@ -994,15 +994,15 @@ addDescription(infoPanel,
     "• Police ESP — See wanted Civilians & stars\n" ..
     "• Rings Farm + Job Farm\n" ..
     "• Themes, RGB Rainbow, Anti AFK\n" ..
-    "• Menu toggle: K or top TYLEVELO button", 5)
+    "• Menu toggle: K or top T button", 5)
 create("Frame", { Parent = infoPanel, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 4), LayoutOrder = 6 })
 
 addSectionHeader(infoPanel, "INFO", 7)
 addDescription(infoPanel,
-    "• Developer: TyleveloProject\n" ..
+    "• Crack by : Onyx\n" ..
     "• Version: 1.4 (Stable)\n" ..
     "• Status: Undetected\n" ..
-    "• Community: t.me/TyleveloScript", 8)
+    "• Cracks: https://t.me/onyx_x1", 8)
 create("Frame", { Parent = infoPanel, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 4), LayoutOrder = 9 })
 
 -- Кнопка Telegram
@@ -1025,7 +1025,7 @@ local telegramBtn = create("TextButton", {
 })
 corner(telegramBtn, 8)
 telegramBtn.MouseButton1Click:Connect(function()
-    copyToClipboard("https://t.me/TyleveloScript")
+    copyToClipboard("https://t.me/onyx_x1")
     telegramBtn.Text = "Copied!"
     task.delay(1.2, function()
         if telegramBtn.Parent then telegramBtn.Text = "✈️ Telegram" end
@@ -2669,7 +2669,7 @@ local function faceNearestObject(centerPos, fallbackDir)
     end
 end
 
--- Обработка одной точки маршрута
+-- Обработка одной точки маршрута            
 local function processRoutePoint(routePoint, prevPoint)
     faceNearestObject(routePoint, (routePoint - prevPoint).Unit)
     task.wait(0.2)
