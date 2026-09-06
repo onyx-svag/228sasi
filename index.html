@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#081f24">
+  <meta name="color-scheme" content="dark">
+  <title>Aqua — маленький подводный мир</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230c3035'/%3E%3Cpath d='M12 32Q29 10 45 30L55 21V43L45 34Q29 54 12 32' fill='%237fd9c2'/%3E%3Ccircle cx='24' cy='29' r='3' fill='%230c3035'/%3E%3C/svg%3E">
+  <style>
+    :root { color-scheme: dark; font-family: "Avenir Next", "Segoe UI", sans-serif; color: #e5eee8; background: #081f24; }
+    * { box-sizing: border-box; }
+    body { margin: 0; overflow: hidden; background: radial-gradient(ellipse at 55% 34%, #20474a 0%, #102f35 38%, #081f24 72%); }
+    body::after { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 48% 43%, #12243e80, #070f20eb); opacity: 0; transition: opacity 1.5s; }
+    body.night::after { opacity: 1; }
+    button { font: inherit; -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, canvas:focus-visible { outline: 2px solid #a9efd0; outline-offset: 5px; }
+    button:disabled { cursor: wait; opacity: .45; }
+    [hidden] { display: none !important; }
+    .stage { position: relative; width: 100%; height: 100vh; height: 100svh; min-height: 440px; }
+    #aquarium { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; display: block; touch-action: none; cursor: grab; }
+    #aquarium.dragging { cursor: grabbing; }
+    .topbar { position: absolute; z-index: 2; inset: 32px 44px auto; display: flex; align-items: center; justify-content: space-between; pointer-events: none; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid #8dd4ba35; border-radius: 50%; color: #9ae1c4; }
+    .brand-icon svg { width: 26px; height: 26px; }
+    .wordmark { font-size: 30px; font-weight: 500; letter-spacing: -1.7px; line-height: 1; }
+    .wordmark span { color: #9be0be; }
+    .brand-caption { margin-top: 7px; font-size: 9px; letter-spacing: 2.4px; color: #9fb7b4; }
+    .live { display: flex; align-items: center; gap: 9px; padding: 11px 15px; border: 1px solid #b1d7c71c; border-radius: 30px; font-size: 10px; letter-spacing: 1.5px; color: #b3ccc1; background: #0c292d40; }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #a5e6ae; box-shadow: 0 0 12px #a5e6ae70; }
+    .paused .live-dot { background: #d0bd8c; box-shadow: none; }
+    .intro { position: absolute; z-index: 2; top: 134px; left: 46px; pointer-events: none; }
+    .eyebrow { color: #8faeaa; font-size: 9px; letter-spacing: 2px; }
+    h1 { font-weight: 400; font-size: clamp(27px, 2.75vw, 41px); letter-spacing: -1.4px; line-height: 1.24; margin: 17px 0 0; }
+    h1 span { color: #a6c7ba; }
+    .environment { position: absolute; z-index: 2; left: 46px; bottom: 61px; display: flex; gap: 27px; pointer-events: none; }
+    .stat + .stat { padding-left: 27px; border-left: 1px solid #b4d3c320; }
+    .stat-value { font-size: 25px; font-weight: 400; letter-spacing: -1px; }
+    .stat-value small { color: #a9c7bc; font-size: 15px; }
+    .stat-label { margin-top: 5px; font-size: 10px; color: #91aba6; letter-spacing: .5px; }
+    .dock-wrap { position: absolute; z-index: 3; bottom: 34px; left: 50%; transform: translateX(-50%); text-align: center; }
+    .dock { display: flex; align-items: center; padding: 7px; gap: 5px; background: #0c282bd9; border: 1px solid #9ac4b52b; border-radius: 18px; backdrop-filter: blur(18px); box-shadow: 0 12px 40px #00191c40, inset 0 1px 0 #e7fff208; }
+    .control { display: flex; align-items: center; justify-content: center; gap: 9px; color: #c8dbd1; border: 0; border-radius: 11px; padding: 13px 15px; min-height: 46px; background: transparent; cursor: pointer; font-size: 12px; white-space: nowrap; transition: background .2s, color .2s; }
+    .control:hover { background: #b3ddc410; color: #fff; }
+    .control[aria-pressed="true"] { background: #b3ddc41a; }
+    .control.primary { background: #b8e5c5; color: #173b32; padding-inline: 19px; font-weight: 600; }
+    .control.primary:hover { background: #d0f2d5; }
+    .control svg { height: 18px; width: 18px; flex-shrink: 0; }
+    .control.icon-only { padding-inline: 13px; }
+    .divider { height: 22px; width: 1px; margin-inline: 2px; background: #b4d3c323; }
+    .help { margin: 16px 0 0; font-size: 10px; color: #86a6a2; letter-spacing: .2px; white-space: nowrap; }
+    .help span { padding: 0 7px; color: #5b807e; }
+    .signature { position: absolute; z-index: 2; right: 46px; bottom: 66px; text-align: right; color: #adc8bb; font-size: 12px; line-height: 1.7; pointer-events: none; }
+    .signature span { color: #789b98; font-size: 10px; }
+    .toast { position: absolute; z-index: 4; bottom: 144px; left: 50%; transform: translate(-50%, 8px); padding: 11px 18px; border: 1px solid #afd9bd30; border-radius: 30px; background: #103236ed; color: #d2e8d8; font-size: 12px; opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none; text-align: center; max-width: calc(100% - 32px); }
+    .toast.visible { opacity: 1; transform: translate(-50%, 0); }
+    .fallback { position: absolute; z-index: 5; inset: 30% 20%; padding: 30px; border: 1px solid #a7d6c34d; border-radius: 22px; background: #102e34; text-align: center; align-content: center; }
+    .fallback h2 { font-size: 23px; font-weight: 500; }
+    .fallback p { color: #b2c9be; font-size: 14px; line-height: 1.7; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 1050px) { .signature { display: none; } .environment { bottom: 150px; gap: 20px; } .stat + .stat { padding-left: 20px; } }
+    @media (max-width: 600px) {
+      .topbar { inset: 23px 22px auto; } .brand { gap: 9px; } .brand-icon { width: 37px; height: 37px; } .wordmark { font-size: 27px; }
+      .brand-caption { font-size: 7px; letter-spacing: 1.6px; } .live { font-size: 8px; letter-spacing: .8px; padding: 9px 11px; }
+      .intro { top: 112px; left: 24px; } .eyebrow { font-size: 8px; letter-spacing: 1.6px; } h1 { margin-top: 12px; font-size: 31px; }
+      .environment { left: 25px; bottom: 159px; } .stat-value { font-size: 23px; }
+      .dock-wrap { bottom: 29px; width: calc(100% - 32px); } .dock { justify-content: center; gap: 2px; padding: 6px; border-radius: 16px; }
+      .control { padding: 12px 10px; gap: 6px; font-size: 11px; } .control.primary { padding-inline: 12px; } .control.icon-only { padding-inline: 9px; }
+      .help { font-size: 9px; } .help span { padding-inline: 3px; } .toast { bottom: 137px; width: max-content; }
+      .fallback { inset: 27% 5%; padding: 20px; }
+    }
+    @media (max-height: 620px) and (min-width: 601px) {
+      .topbar { top: 18px; } .intro { top: 96px; } h1 { font-size: 27px; } .environment { bottom: 35px; }
+      .dock-wrap { bottom: 17px; } .signature { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::after { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <symbol id="i-fish" viewBox="0 0 24 24"><path d="M3 12c4-6 10-6 14-1l4-4v10l-4-4c-4 5-10 5-14-1Z"/><circle cx="8" cy="11" r=".8" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-feed" viewBox="0 0 24 24"><path d="m8 3 8 3-3 7-8-3 3-7Z M4 19c4-2 5 2 8 0s5 0 8-1"/><path d="M15 14v.1 M11 16v.1 M18 12v.1" stroke-width="2.8" stroke-linecap="round"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke-width="2.5" stroke-linecap="round"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z" stroke-linejoin="round"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z" stroke-linejoin="round"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" stroke-linecap="round"/></symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 7M4 4v6h6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+  <main class="stage">
+    <canvas id="aquarium" tabindex="0" role="img" aria-label="Трёхмерный аквариум с 18 самостоятельно плавающими рыбками" aria-describedby="keyboard-help"></canvas>
+    <p id="keyboard-help" class="sr-only">Потяните мышью или пальцем, чтобы повернуть аквариум. Колесо мыши или жест двумя пальцами меняет масштаб. С клавиатуры: стрелки поворачивают камеру, плюс и минус меняют масштаб, Home возвращает исходный вид. Кнопки ниже управляют аквариумом.</p>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon"><svg fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><use href="#i-fish"/></svg></div>
+        <div><div class="wordmark">aqua<span>.</span></div><div class="brand-caption">МАЛЕНЬКИЙ ПОДВОДНЫЙ МИР</div></div>
+      </div>
+      <div class="live"><span class="live-dot"></span><span id="live-label">ЖИВОЙ АКВАРИУМ</span></div>
+    </header>
+    <div class="intro"><div class="eyebrow">ВДОХ. ВЫДОХ. НИКАКОЙ СПЕШКИ.</div><h1>Просто<br><span>наблюдайте.</span></h1></div>
+    <div class="environment" aria-label="18 рыбок, декоративная температура 24 градуса">
+      <div class="stat"><div class="stat-value">18</div><div class="stat-label">обитателей</div></div>
+      <div class="stat"><div class="stat-value">24<small> °C</small></div><div class="stat-label">уютная вода</div></div>
+    </div>
+    <div class="dock-wrap">
+      <nav class="dock" aria-label="Управление аквариумом">
+        <button class="control primary" id="feed" type="button"><svg fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-feed"/></svg>Покормить</button>
+        <button class="control" id="pause" type="button" aria-pressed="false" aria-label="Приостановить плавание"><svg fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-pause"/></svg><span>Пауза</span></button>
+        <button class="control" id="light" type="button" aria-pressed="false" aria-label="Ночной свет"><svg fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-moon"/></svg><span>Ночь</span></button>
+        <span class="divider" aria-hidden="true"></span>
+        <button class="control icon-only" id="reset" type="button" aria-label="Вернуть камеру" title="Вернуть камеру"><svg fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#i-reset"/></svg></button>
+      </nav>
+      <p class="help">Потяните, чтобы повернуть <span>·</span> Приблизьте колесом или жестом</p>
+    </div>
+    <div class="signature">Никаких забот.<br><span>Только вы и немного тишины.</span></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <section id="fallback" class="fallback" role="alert" hidden><h2>Для этого мира нужна 3D-графика</h2><p id="fallback-message">Включите WebGL и аппаратное ускорение в браузере или откройте файл в другом современном браузере.</p><button class="control primary" type="button" onclick="location.reload()" style="margin:18px auto 0">Попробовать ещё раз</button></section>
+  </main>
+  <script>
+  (() => {
+    'use strict';
+    const canvas = document.getElementById('aquarium');
+    const controls = document.querySelectorAll('.dock button');
+    function fail(message) {
+      if (message) document.getElementById('fallback-message').textContent = message;
+      document.getElementById('fallback').hidden = false;
+      document.getElementById('live-label').textContent = '3D НЕДОСТУПНО';
+      document.body.classList.add('paused');
+      controls.forEach(button => { button.disabled = true; });
+    }
+    const gl = canvas.getContext('webgl', { alpha: true, antialias: true, powerPreference: 'high-performance' });
+    if (!gl) { fail(); return; }
+    try { start(); } catch (error) { console.error('Aquarium initialization failed:', error); fail(); }
+
+    function start() {
+      const TAU = Math.PI * 2;
+      let seed = 73119;
+      const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+      const range = (min, max) => min + random() * (max - min);
+      const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+      const add = (a, b) => a.map((v, i) => v + b[i]);
+      const sub = (a, b) => a.map((v, i) => v - b[i]);
+      const mul = (a, k) => a.map(v => v * k);
+      const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+      const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+      const length = a => Math.hypot(...a);
+      const normalize = a => mul(a, 1 / (length(a) || 1));
+      const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+      const rgba = (r, g, b, a = 1) => [r, g, b, a];
+
+      function program(vertex, fragment) {
+        const shaders = [[gl.VERTEX_SHADER, vertex], [gl.FRAGMENT_SHADER, fragment]].map(([type, source]) => {
+          const shader = gl.createShader(type);
+          gl.shaderSource(shader, source);
+          gl.compileShader(shader);
+          if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader));
+          return shader;
+        });
+        const result = gl.createProgram();
+        shaders.forEach(shader => gl.attachShader(result, shader));
+        gl.linkProgram(result);
+        if (!gl.getProgramParameter(result, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(result));
+        shaders.forEach(shader => gl.deleteShader(shader));
+        return result;
+      }
+
+      const sceneProgram = program(`
+        attribute vec3 aPosition;
+        attribute vec3 aNormal;
+        attribute vec4 aColor;
+        uniform mat4 uViewProjection;
+        uniform mat4 uModel;
+        uniform float uTime;
+        uniform float uMotion;
+        varying vec3 vPosition;
+        varying vec3 vNormal;
+        varying vec4 vColor;
+        void main() {
+          vec3 p = aPosition;
+          if (uMotion > 0.5 && uMotion < 1.5) {
+            float tail = 1.0 - smoothstep(-1.25, 0.25, p.x);
+            p.z += sin(uTime * 8.5 + p.x * 3.6) * tail * tail * 0.23;
+          } else if (uMotion > 1.5 && uMotion < 2.5) {
+            p.x += sin(uTime * 0.95 + p.y * 1.3 + p.z) * p.y * 0.045;
+            p.z += cos(uTime * 0.7 + p.x * 0.6 + p.y) * p.y * 0.035;
+          } else if (uMotion > 2.5) {
+            p.y += sin(p.x * 2.5 + uTime * 1.1) * cos(p.z * 2.0 + uTime * 0.7) * 0.017;
+          }
+          vec4 world = uModel * vec4(p, 1.0);
+          vPosition = world.xyz;
+          vNormal = normalize(mat3(uModel) * aNormal);
+          vColor = aColor;
+          gl_Position = uViewProjection * world;
+        }
+      `, `
+        precision mediump float;
+        uniform vec3 uEye;
+        uniform float uNight;
+        uniform float uTime;
+        uniform float uMaterial;
+        varying vec3 vPosition;
+        varying vec3 vNormal;
+        varying vec4 vColor;
+        void main() {
+          vec3 n = normalize(vNormal);
+          if (!gl_FrontFacing) n = -n;
+          vec3 view = normalize(uEye - vPosition);
+          float rim = pow(1.0 - abs(dot(n, view)), 3.0);
+          if (uMaterial > 1.5) {
+            gl_FragColor = vec4(vColor.rgb * (1.0 - uNight * 0.55), vColor.a);
+          } else if (uMaterial > 0.5) {
+            vec3 tint = mix(vColor.rgb, vec3(0.24, 0.48, 0.75), uNight * 0.65);
+            float shine = pow(max(dot(reflect(-normalize(vec3(-0.5, 1.0, 0.8)), n), view), 0.0), 50.0);
+            gl_FragColor = vec4(tint + shine * 0.2, vColor.a + rim * 0.14);
+          } else {
+            vec3 light = normalize(vec3(-0.35, 0.9, 0.6));
+            float diffuse = max(dot(n, light), 0.0);
+            vec3 illumination = mix(vec3(1.02, 1.04, 0.95), vec3(0.32, 0.57, 0.82), uNight * 0.88);
+            vec3 color = vColor.rgb * illumination * (0.53 + diffuse * 0.48);
+            float caustic = pow(0.5 + 0.5 * sin(vPosition.x * 3.8 + sin(vPosition.z * 3.2 + uTime * 0.5)) * cos(vPosition.z * 4.5 + vPosition.x * 0.7 - uTime * 0.6), 9.0);
+            color += vec3(0.17, 0.23, 0.15) * caustic * max(n.y, 0.0) * (1.0 - uNight * 0.8);
+            color += vec3(0.12, 0.3, 0.25) * rim * 0.16;
+            float underwater = clamp((3.0 - vPosition.z) * 0.013, 0.0, 0.09);
+            color = mix(color, vec3(0.12, 0.4, 0.38), underwater);
+            gl_FragColor = vec4(color, vColor.a);
+          }
+        }
+      `);
+      const attrs = Object.fromEntries(['aPosition', 'aNormal', 'aColor'].map(key => [key, gl.getAttribLocation(sceneProgram, key)]));
+      const uniforms = Object.fromEntries(['uViewProjection', 'uModel', 'uTime', 'uMotion', 'uEye', 'uNight', 'uMaterial'].map(key => [key, gl.getUniformLocation(sceneProgram, key)]));
+
+      class Mesh {
+        constructor() { this.data = []; }
+        vertex(p, n, c) { this.data.push(...p, ...n, ...c); }
+        triangle(a, b, c, color) {
+          const normal = normalize(cross(sub(b, a), sub(c, a)));
+          this.vertex(a, normal, color); this.vertex(b, normal, color); this.vertex(c, normal, color);
+        }
+        quad(a, b, c, d, color) { this.triangle(a, b, c, color); this.triangle(a, c, d, color); }
+        upload() {
+          this.count = this.data.length / 10;
+          this.buffer = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.data), gl.STATIC_DRAW);
+          this.data = null;
+          return this;
+        }
+      }
+
+      function sphere(mesh, center, radii, color, segments = 16, rings = 10, roughness = 0) {
+        const grid = [];
+        for (let j = 0; j <= rings; j++) {
+          const row = [];
+          const v = j * Math.PI / rings;
+          for (let i = 0; i <= segments; i++) {
+            const u = i * TAU / segments;
+            const unit = [Math.cos(u) * Math.sin(v), Math.cos(v), Math.sin(u) * Math.sin(v)];
+            const wobble = 1 + roughness * Math.sin(unit[0] * 12 + unit[1] * 10) * Math.cos(unit[2] * 9 + unit[1] * 13);
+            const p = unit.map((value, k) => value * radii[k] * wobble + center[k]);
+            const n = normalize(unit.map((value, k) => value / radii[k]));
+            const c = typeof color === 'function' ? color(...unit) : color;
+            row.push([p, n, c]);
+          }
+          grid.push(row);
+        }
+        for (let j = 0; j < rings; j++) for (let i = 0; i < segments; i++) {
+          const a = grid[j][i], b = grid[j + 1][i], c = grid[j + 1][i + 1], d = grid[j][i + 1];
+          [a, c, b, a, d, c].forEach(vertex => mesh.vertex(...vertex));
+        }
+      }
+
+      function box(mesh, center, size, color) {
+        const [x, y, z] = center, [w, h, d] = size.map(v => v / 2);
+        const l = x - w, r = x + w, b = y - h, t = y + h, f = z + d, k = z - d;
+        mesh.quad([l,b,f], [r,b,f], [r,t,f], [l,t,f], color);
+        mesh.quad([r,b,k], [l,b,k], [l,t,k], [r,t,k], color);
+        mesh.quad([r,b,f], [r,b,k], [r,t,k], [r,t,f], color);
+        mesh.quad([l,b,k], [l,b,f], [l,t,f], [l,t,k], color);
+        mesh.quad([l,t,f], [r,t,f], [r,t,k], [l,t,k], color);
+        mesh.quad([l,b,k], [r,b,k], [r,b,f], [l,b,f], color);
+      }
+
+      function tube(mesh, a, b, radiusA, radiusB, color, segments = 9) {
+        const tangent = normalize(sub(b, a));
+        const u = normalize(cross(tangent, Math.abs(tangent[1]) > 0.9 ? [1,0,0] : [0,1,0]));
+        const v = cross(tangent, u);
+        const radial = angle => add(mul(u, Math.cos(angle)), mul(v, Math.sin(angle)));
+        for (let i = 0; i < segments; i++) {
+          const n1 = radial(i * TAU / segments), n2 = radial((i + 1) * TAU / segments);
+          mesh.quad(add(a, mul(n1, radiusA)), add(a, mul(n2, radiusA)), add(b, mul(n2, radiusB)), add(b, mul(n1, radiusB)), color);
+        }
+      }
+
+      const identity = new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+      function model(position, scale = 1, yaw = 0, pitch = 0) {
+        const c = Math.cos(yaw), s = Math.sin(yaw), p = Math.cos(pitch), q = Math.sin(pitch);
+        return new Float32Array([c*p*scale, q*scale, -s*p*scale, 0, -c*q*scale, p*scale, s*q*scale, 0, s*scale, 0, c*scale, 0, ...position, 1]);
+      }
+      function multiply(a, b) {
+        const out = new Float32Array(16);
+        for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) out[c * 4 + r] += a[k * 4 + r] * b[c * 4 + k];
+        return out;
+      }
+      function perspective(fov, aspect, near, far) {
+        const f = 1 / Math.tan(fov / 2), d = 1 / (near - far);
+        return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*d,-1, 0,0,2*far*near*d,0]);
+      }
+      function lookAt(eye, target) {
+        const z = normalize(sub(eye, target)), x = normalize(cross([0,1,0], z)), y = cross(z, x);
+        return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0, -dot(x,eye),-dot(y,eye),-dot(z,eye),1]);
+      }
+
+      const scenery = new Mesh(), plants = new Mesh(), rim = new Mesh(), glow = new Mesh(), rays = new Mesh(), shadow = new Mesh();
+      const sandY = (x, z) => 0.22 + Math.sin(x * 0.8 + z * 0.4) * Math.cos(z * 1.1) * 0.055 + Math.exp(-((x + 3.7) ** 2 + (z + 1.5) ** 2) / 5) * 0.18;
+      box(scenery, [0,-0.34,0], [11.45,0.52,6.4], rgba(0.07,0.16,0.17));
+      box(scenery, [0,-0.64,0], [11.7,0.11,6.65], rgba(0.045,0.12,0.135));
+      box(scenery, [0,-0.07,0], [11.32,0.055,6.26], rgba(0.32,0.47,0.44));
+      box(scenery, [0,0.075,0], [11.1,0.25,6.06], rgba(0.63,0.66,0.51));
+      box(glow, [0,-0.24,3.208], [9.7,0.016,0.006], rgba(0.37,0.73,0.65));
+      for (let x = 0; x < 44; x++) for (let z = 0; z < 26; z++) {
+        const x0 = -5.55 + x / 44 * 11.1, x1 = x0 + 11.1 / 44, z0 = -3.03 + z / 26 * 6.06, z1 = z0 + 6.06 / 26;
+        const tone = range(0.94, 1.04);
+        scenery.quad([x0,sandY(x0,z0),z0], [x0,sandY(x0,z1),z1], [x1,sandY(x1,z1),z1], [x1,sandY(x1,z0),z0], rgba(0.77*tone,0.79*tone,0.63*tone));
+      }
+      for (let i = 0; i < 72; i++) {
+        const x = range(-5.3,5.3), z = range(-2.8,2.8), r = range(0.035,0.10), shade = range(0.55,0.83);
+        sphere(scenery, [x,sandY(x,z)+r*0.3,z], [r,r*0.55,r*0.8], rgba(shade,shade*1.025,shade*0.84), 7, 4, 0.12);
+      }
+      const rocks = [
+        [-3.6,0.74,-1.1,1.08,0.88,0.85], [-4.4,0.54,-0.3,0.63,0.48,0.65], [-2.9,0.47,-0.3,0.66,0.40,0.57],
+        [3.6,0.71,-1.5,0.91,0.73,0.78], [4.32,0.49,-0.8,0.62,0.39,0.61], [2.9,0.42,-1.1,0.61,0.34,0.48]
+      ];
+      rocks.forEach(([x,y,z,rx,ry,rz], i) => {
+        sphere(scenery, [x,y,z], [rx,ry,rz], (a,b,c) => {
+          const shade = 0.9 + Math.sin(a*14+b*9+c*4) * 0.06 + b * 0.12;
+          return rgba(0.31*shade,0.39*shade,0.34*shade);
+        }, 12, 8, 0.13);
+        sphere(scenery, [x-0.1,y+ry*0.75,z], [rx*0.74,ry*0.25,rz*0.72], rgba(0.24+i*0.008,0.40,0.19), 12, 6, 0.1);
+      });
+      const wood = rgba(0.31,0.29,0.20);
+      const branches = [
+        [[-2.5,0.33,-1.7],[-1.6,0.85,-1.8],0.25,0.23], [[-1.6,0.85,-1.8],[-0.2,1.12,-1.85],0.23,0.16],
+        [[-0.2,1.12,-1.85],[1.3,0.31,-1.7],0.16,0.08], [[-0.5,1.07,-1.83],[0.2,1.75,-2.05],0.11,0.035],
+        [[-1.7,0.8,-1.8],[-2.2,1.55,-2.1],0.1,0.025], [[0.8,0.55,-1.75],[1.8,0.3,-1.2],0.075,0.025]
+      ];
+      branches.forEach(([a,b,ra,rb]) => { tube(scenery,a,b,ra,rb,wood); sphere(scenery,a,[ra,ra,ra],wood,8,5); });
+
+      function leaf(root, height, angle, lean, width, tint) {
+        const side = [-Math.sin(angle),0,Math.cos(angle)];
+        const direction = [Math.cos(angle),0,Math.sin(angle)];
+        const at = t => add(root, [direction[0]*lean*t*t, height*t, direction[2]*lean*t*t]);
+        for (let j = 0; j < 10; j++) {
+          const t0 = j/10, t1 = (j+1)/10;
+          const w0 = Math.sin(Math.PI*t0)*width+0.003, w1 = Math.sin(Math.PI*t1)*width+0.003;
+          const p0 = at(t0), p1 = at(t1), fold = mul(direction,width*0.18);
+          const l0 = add(p0,mul(side,w0)), r0 = add(p0,mul(side,-w0));
+          const l1 = add(p1,mul(side,w1)), r1 = add(p1,mul(side,-w1));
+          const color = mix(tint,rgba(0.38,0.64,0.31),t0*0.45);
+          plants.quad(l0,l1,add(p1,fold),add(p0,fold),color);
+          plants.quad(add(p0,fold),add(p1,fold),r1,r0,mix(color,rgba(0.13,0.35,0.22),0.18));
+        }
+      }
+      const clusters = [[-4.7,-2.4,3.3],[-3.7,-2.5,2.5],[-2.7,-2.5,2.0],[4.7,-2.35,3.4],[3.65,-2.55,2.7],[4.85,-0.1,2.1],[-4.9,0.8,1.65],[4.4,1.6,1.15],[-3.8,1.9,0.72],[2.8,1.9,0.55],[-1.9,-2.6,1.8],[1.7,-2.6,2.0]];
+      clusters.forEach(([x,z,height]) => {
+        for (let i = 0; i < 9; i++) {
+          const root = [x+range(-0.23,0.23),sandY(x,z),z+range(-0.2,0.2)];
+          leaf(root,height*range(0.55,1),range(0,TAU),range(0.18,0.75),range(0.07,0.19),rgba(range(0.12,0.22),range(0.34,0.49),range(0.18,0.27)));
+        }
+      });
+      for (let i = 0; i < 28; i++) {
+        const x = range(-5,5), z = range(1.9,2.65);
+        if (Math.abs(x) < 2.6) continue;
+        leaf([x,sandY(x,z),z],range(0.15,0.45),range(0,TAU),0.15,0.035,rgba(0.32,0.49,0.22));
+      }
+
+      for (const x of [-5.62,5.62]) for (const z of [-3.12,3.12]) tube(rim,[x,-0.06,z],[x,5.65,z],0.014,0.014,rgba(0.53,0.83,0.79,0.32),6);
+      for (const y of [0,5.65]) {
+        for (const z of [-3.12,3.12]) tube(rim,[-5.62,y,z],[5.62,y,z],0.016,0.016,rgba(0.59,0.87,0.82,0.4),6);
+        for (const x of [-5.62,5.62]) tube(rim,[x,y,-3.12],[x,y,3.12],0.016,0.016,rgba(0.59,0.87,0.82,0.4),6);
+      }
+      box(glow,[0,5.63,-3.10],[10.95,0.025,0.04],rgba(0.69,0.94,0.85,0.8));
+      for (let i = 0; i < 3; i++) {
+        const x = -3.8+i*3;
+        const n = [0,0,1];
+        const a = [x,5.48,-2.45], b = [x+0.7,5.48,-2.45], c = [x+2.5,0.3,0.9], d = [x+0.5,0.3,0.9];
+        const top = rgba(0.67,0.9,0.76,0.035), bottom = rgba(0.5,0.8,0.67,0);
+        [[a,top],[b,top],[c,bottom],[a,top],[c,bottom],[d,bottom]].forEach(([p,color]) => rays.vertex(p,n,color));
+      }
+      for (let i = 0; i < 64; i++) {
+        const a = i*TAU/64, b = (i+1)*TAU/64, n = [0,1,0];
+        shadow.vertex([0,-0.73,0],n,rgba(0.005,0.025,0.03,0.45));
+        shadow.vertex([Math.cos(b)*8.6,-0.73,Math.sin(b)*5.2],n,rgba(0.005,0.025,0.03,0));
+        shadow.vertex([Math.cos(a)*8.6,-0.73,Math.sin(a)*5.2],n,rgba(0.005,0.025,0.03,0));
+      }
+      const glassFaces = [];
+      function glassFace(a,b,c,d,center,alpha) {
+        const mesh = new Mesh();
+        mesh.quad(a,b,c,d,rgba(0.4,0.77,0.72,alpha));
+        glassFaces.push({ mesh:mesh.upload(), center });
+      }
+      glassFace([-5.61,0,3.11],[5.61,0,3.11],[5.61,5.64,3.11],[-5.61,5.64,3.11],[0,2.8,3.11],0.018);
+      glassFace([5.61,0,-3.11],[-5.61,0,-3.11],[-5.61,5.64,-3.11],[5.61,5.64,-3.11],[0,2.8,-3.11],0.032);
+      glassFace([5.61,0,3.11],[5.61,0,-3.11],[5.61,5.64,-3.11],[5.61,5.64,3.11],[5.61,2.8,0],0.03);
+      glassFace([-5.61,0,-3.11],[-5.61,0,3.11],[-5.61,5.64,3.11],[-5.61,5.64,-3.11],[-5.61,2.8,0],0.03);
+      const surface = new Mesh();
+      for (let x = 0; x < 24; x++) for (let z = 0; z < 14; z++) {
+        const x0 = -5.60+x/24*11.2, x1=x0+11.2/24, z0=-3.10+z/14*6.2, z1=z0+6.2/14;
+        surface.quad([x0,5.46,z1],[x1,5.46,z1],[x1,5.46,z0],[x0,5.46,z0],rgba(0.48,0.86,0.79,0.025));
+      }
+      [scenery,plants,rim,glow,rays,shadow,surface].forEach(mesh => mesh.upload());
+
+      function fishMesh(type) {
+        const mesh = new Mesh();
+        const angel = type === 2, body = angel ? [0.52,0.53,0.19] : [0.7,0.31,0.21];
+        const fin = type === 0 ? rgba(0.96,0.48,0.13) : type === 1 ? rgba(0.19,0.61,0.66) : rgba(0.81,0.76,0.49);
+        sphere(mesh,[0,0,0],body,(x,y) => {
+          if (type === 0) {
+            const stripe = Math.min(Math.abs(x-0.4),Math.abs(x+0.53));
+            if (stripe < 0.14) return rgba(0.98,0.92,0.74);
+            if (stripe < 0.20) return rgba(0.23,0.23,0.17);
+            return mix(rgba(1,0.40,0.075),rgba(1,0.72,0.27),clamp(-y*0.55+0.3,0,1));
+          }
+          if (type === 1) {
+            if (y > -0.12 && y < 0.26) return rgba(0.3,0.96,0.89);
+            if (y <= -0.12 && x < 0.15) return rgba(0.96,0.3,0.22);
+            return mix(rgba(0.12,0.4,0.49),rgba(0.6,0.79,0.75),clamp(-y,0,1));
+          }
+          if (Math.abs(x+0.28) < 0.16 || Math.abs(x-0.57) < 0.13) return rgba(0.22,0.32,0.31);
+          return mix(rgba(0.89,0.80,0.48),rgba(0.92,0.94,0.76),clamp(-y+0.4,0,1));
+        },28,16);
+        const tailX = angel ? -0.5 : -0.66, tailY = angel ? 0.32 : 0.34;
+        mesh.triangle([tailX,0,0],[-1.2,tailY,0.025],[-1.11,0,0.06],fin);
+        mesh.triangle([tailX,0,0],[-1.11,0,0.06],[-1.2,-tailY,0.025],mix(fin,rgba(0.91,0.77,0.38),0.2));
+        for (const y of [-0.25,-0.1,0.1,0.25]) mesh.triangle([tailX,0,0],[-1.17,y,0.032],[-1.16,y+0.014,0.032],mix(fin,rgba(0.27,0.38,0.3),0.35));
+        const top = angel ? 0.49 : 0.28;
+        mesh.triangle([0.24,top*0.6,0],[-0.30,angel?1.0:0.57,0],[-0.48,top*0.55,0],fin);
+        mesh.triangle([0.14,-top*0.7,0],[-0.38,angel?-0.96:-0.48,0],[-0.44,-top*0.58,0],fin);
+        for (const side of [-1,1]) {
+          mesh.triangle([0.1,-0.015,side*0.19],[-0.22,-0.23,side*0.40],[-0.25,-0.05,side*0.16],mix(fin,rgba(0.83,0.86,0.60),0.2));
+          const ex = angel ? 0.31 : 0.46, ey = angel ? 0.13 : 0.09, ez = angel ? 0.153 : 0.166;
+          sphere(mesh,[ex,ey,side*ez],[0.083,0.083,0.032],rgba(0.95,0.94,0.73),12,8);
+          sphere(mesh,[ex+0.016,ey,side*(ez+0.03)],[0.049,0.05,0.02],rgba(0.025,0.075,0.075),10,7);
+          sphere(mesh,[ex+0.025,ey+0.021,side*(ez+0.048)],[0.015,0.015,0.006],rgba(1,1,0.93),6,4);
+        }
+        return mesh.upload();
+      }
+      const fishMeshes = [0,1,2].map(fishMesh);
+      const bubbleMesh = new Mesh(), foodMesh = new Mesh();
+      sphere(bubbleMesh,[0,0,0],[1,1,1],rgba(0.67,0.90,0.85,0.065),10,7);
+      sphere(foodMesh,[0,0,0],[1,1,1],rgba(0.87,0.62,0.27),8,5);
+      bubbleMesh.upload(); foodMesh.upload();
+
+      const fish = Array.from({length:18}, (_, i) => {
+        const type = i < 6 ? 0 : i < 14 ? 1 : 2;
+        const yaw = range(-Math.PI,Math.PI), speed = range(0.37,0.66);
+        return { type, position:[range(-4.2,4.2),range(1.6,4.8),range(-2.1,2.1)], velocity:[Math.cos(yaw)*speed,0,-Math.sin(yaw)*speed], yaw, pitch:0, scale:type===1?range(0.37,0.48):range(0.51,0.64), speed, phase:range(0,10), timer:0, goal:[0,3,0] };
+      });
+      const bubbles = Array.from({length:34}, (_, i) => ({ x:i%2?-4.72:4.15, z:i%2?-1.55:0.9, offset:range(0,5.4), speed:range(0.34,0.68), radius:range(0.025,0.065), phase:range(0,TAU) }));
+      const food = [];
+      let time = 0, night = 0, targetNight = 0;
+      let paused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let camera = {yaw:0.29, pitch:0.29, zoom:1};
+      const cameraTarget = {...camera};
+      let lastFrame = performance.now(), animationFrame, stopped = false;
+
+      function newGoal(f) {
+        f.goal = [range(-4.35,4.35),range(1.05,4.78),range(-2.2,2.2)];
+        f.timer = range(5,11);
+      }
+      function update(dt) {
+        time += dt;
+        for (let i = food.length-1; i >= 0; i--) {
+          food[i].position[1] -= dt*0.18;
+          food[i].life -= dt;
+          if (food[i].life <= 0 || food[i].position[1] < 0.45) food.splice(i,1);
+        }
+        for (const f of fish) {
+          f.timer -= dt;
+          if (f.timer <= 0 || length(sub(f.goal,f.position)) < 0.65) newGoal(f);
+          let goal = f.goal;
+          if (food.length) {
+            let closest = food[0], distance = Infinity;
+            for (const pellet of food) {
+              const d = length(sub(pellet.position,f.position));
+              if (d < distance) { closest = pellet; distance = d; }
+            }
+            goal = closest.position;
+            if (distance < 0.3) food.splice(food.indexOf(closest),1);
+          }
+          let desired = mul(normalize(sub(goal,f.position)),f.speed*(food.length?1.45:1));
+          for (const other of fish) {
+            if (other === f) continue;
+            const diff = sub(f.position,other.position), d = length(diff);
+            if (d < 0.72 && d > 0.001) desired = add(desired,mul(diff,(0.72-d)/d*1.4));
+          }
+          for (const [x,y,z,rx,ry,rz] of rocks) {
+            const diff = sub(f.position,[x,y,z]), distance = length(diff), radius = Math.max(rx,ry,rz)+0.4;
+            if (distance < radius) desired = add(desired,mul(normalize(diff),(radius-distance)*2.4));
+          }
+          for (let axis = 0; axis < 3; axis++) {
+            const low = [-4.55,0.95,-2.32][axis], high = [4.55,4.86,2.32][axis];
+            if (f.position[axis] < low+0.5) desired[axis] += (low+0.5-f.position[axis])*1.7;
+            if (f.position[axis] > high-0.5) desired[axis] -= (f.position[axis]-high+0.5)*1.7;
+          }
+          desired[1] *= 0.65;
+          f.velocity = mix(f.velocity,desired,1-Math.exp(-dt*1.8));
+          f.position = add(f.position,mul(f.velocity,dt));
+          f.position[0] = clamp(f.position[0],-4.6,4.6);
+          f.position[1] = clamp(f.position[1],0.9,4.95);
+          f.position[2] = clamp(f.position[2],-2.4,2.4);
+          const yaw = Math.atan2(-f.velocity[2],f.velocity[0]);
+          const difference = Math.atan2(Math.sin(yaw-f.yaw),Math.cos(yaw-f.yaw));
+          f.yaw += difference*(1-Math.exp(-dt*4));
+          const pitch = clamp(Math.atan2(f.velocity[1],Math.hypot(f.velocity[0],f.velocity[2])),-0.45,0.45);
+          f.pitch += (pitch-f.pitch)*(1-Math.exp(-dt*3));
+        }
+      }
+
+      const dustProgram = program(`
+        attribute vec3 aPosition;
+        uniform mat4 uViewProjection;
+        uniform float uTime;
+        uniform float uPixelRatio;
+        void main() {
+          vec3 p = aPosition;
+          p.y = mod(p.y + uTime * 0.035, 5.1) + 0.25;
+          p.x += sin(uTime * 0.25 + p.z) * 0.09;
+          gl_Position = uViewProjection * vec4(p, 1.0);
+          gl_PointSize = uPixelRatio * 1.9;
+        }
+      `, `
+        precision mediump float;
+        void main() {
+          float a = 1.0 - smoothstep(0.12, 0.5, length(gl_PointCoord - 0.5));
+          gl_FragColor = vec4(0.72, 0.91, 0.79, a * 0.27);
+        }
+      `);
+      const dustPosition = gl.getAttribLocation(dustProgram,'aPosition');
+      const dustUniforms = Object.fromEntries(['uViewProjection','uTime','uPixelRatio'].map(key => [key,gl.getUniformLocation(dustProgram,key)]));
+      const dustBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER,dustBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(Array.from({length:75},() => [range(-5.2,5.2),range(0,5.1),range(-2.8,2.8)]).flat()),gl.STATIC_DRAW);
+
+      let pixelRatio = 1, aspect = 1;
+      function resize() {
+        pixelRatio = Math.min(window.devicePixelRatio || 1,1.75);
+        const width = Math.max(1,Math.round(canvas.clientWidth*pixelRatio));
+        const height = Math.max(1,Math.round(canvas.clientHeight*pixelRatio));
+        if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+        aspect = width/height;
+        gl.viewport(0,0,width,height);
+      }
+      window.addEventListener('resize',resize);
+      resize();
+      gl.enable(gl.DEPTH_TEST);
+      gl.depthFunc(gl.LEQUAL);
+      gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+      gl.clearColor(0,0,0,0);
+
+      function draw(mesh, transform = identity, motion = 0, material = 0, phase = 0) {
+        gl.bindBuffer(gl.ARRAY_BUFFER,mesh.buffer);
+        gl.vertexAttribPointer(attrs.aPosition,3,gl.FLOAT,false,40,0);
+        gl.vertexAttribPointer(attrs.aNormal,3,gl.FLOAT,false,40,12);
+        gl.vertexAttribPointer(attrs.aColor,4,gl.FLOAT,false,40,24);
+        gl.uniformMatrix4fv(uniforms.uModel,false,transform);
+        gl.uniform1f(uniforms.uMotion,motion);
+        gl.uniform1f(uniforms.uMaterial,material);
+        gl.uniform1f(uniforms.uTime,time+phase);
+        gl.drawArrays(gl.TRIANGLES,0,mesh.count);
+      }
+      function render(now) {
+        if (stopped) return;
+        const dt = clamp((now-lastFrame)/1000,0,0.05);
+        lastFrame = now;
+        if (!paused) update(dt);
+        night += (targetNight-night)*(1-Math.exp(-dt*2.2));
+        for (const key of ['yaw','pitch','zoom']) camera[key] += (cameraTarget[key]-camera[key])*(1-Math.exp(-dt*9));
+        const fov = 38*Math.PI/180;
+        const distance = Math.max(17.8,8.25/(aspect*Math.tan(fov/2)))*camera.zoom;
+        const eye = [Math.sin(camera.yaw)*Math.cos(camera.pitch)*distance,2.55+Math.sin(camera.pitch)*distance,Math.cos(camera.yaw)*Math.cos(camera.pitch)*distance];
+        const vp = multiply(perspective(fov,aspect,0.1,180),lookAt(eye,[0,2.55,0]));
+        gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+        gl.useProgram(sceneProgram);
+        Object.values(attrs).forEach(location => gl.enableVertexAttribArray(location));
+        gl.uniformMatrix4fv(uniforms.uViewProjection,false,vp);
+        gl.uniform3fv(uniforms.uEye,eye);
+        gl.uniform1f(uniforms.uNight,night);
+        gl.enable(gl.BLEND); gl.depthMask(false);
+        draw(shadow,identity,0,2);
+        gl.disable(gl.BLEND); gl.depthMask(true);
+        draw(scenery);
+        draw(plants,identity,2);
+        fish.forEach(f => draw(fishMeshes[f.type],model(f.position,f.scale,f.yaw,f.pitch),1,0,f.phase));
+        food.forEach(pellet => draw(foodMesh,model(pellet.position,0.036)));
+        gl.enable(gl.BLEND); gl.depthMask(false);
+        draw(rays,identity,0,2);
+        bubbles.forEach(b => {
+          const y = (time*b.speed+b.offset)%5.2+0.25;
+          const position = [b.x+Math.sin(time*1.3+b.phase+y)*0.11,y,b.z+Math.cos(time+b.phase)*0.1];
+          draw(bubbleMesh,model(position,b.radius*(0.85+y*0.04)),0,1);
+        });
+        glassFaces.sort((a,b) => length(sub(b.center,eye))-length(sub(a.center,eye)));
+        glassFaces.forEach(face => draw(face.mesh,identity,0,1));
+        draw(surface,identity,3,1);
+        draw(rim,identity,0,2);
+        draw(glow,identity,0,2);
+        Object.values(attrs).forEach(location => gl.disableVertexAttribArray(location));
+        gl.useProgram(dustProgram);
+        gl.bindBuffer(gl.ARRAY_BUFFER,dustBuffer);
+        gl.enableVertexAttribArray(dustPosition);
+        gl.vertexAttribPointer(dustPosition,3,gl.FLOAT,false,12,0);
+        gl.uniformMatrix4fv(dustUniforms.uViewProjection,false,vp);
+        gl.uniform1f(dustUniforms.uTime,time);
+        gl.uniform1f(dustUniforms.uPixelRatio,pixelRatio);
+        gl.drawArrays(gl.POINTS,0,75);
+        gl.disableVertexAttribArray(dustPosition);
+        gl.depthMask(true);
+        animationFrame = requestAnimationFrame(render);
+      }
+
+      let toastTimer;
+      function notify(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('visible'),3200);
+      }
+      const pauseButton = document.getElementById('pause');
+      function syncPause() {
+        pauseButton.setAttribute('aria-pressed',String(paused));
+        pauseButton.setAttribute('aria-label',paused?'Продолжить плавание':'Приостановить плавание');
+        pauseButton.querySelector('span').textContent = paused?'Продолжить':'Пауза';
+        pauseButton.querySelector('use').setAttribute('href',paused?'#i-play':'#i-pause');
+        document.getElementById('live-label').textContent = paused?'НА ПАУЗЕ':'ЖИВОЙ АКВАРИУМ';
+        document.body.classList.toggle('paused',paused);
+      }
+      syncPause();
+      pauseButton.addEventListener('click',() => { paused = !paused; syncPause(); });
+      document.getElementById('light').addEventListener('click',event => {
+        targetNight = targetNight ? 0 : 1;
+        document.body.classList.toggle('night',Boolean(targetNight));
+        const button = event.currentTarget;
+        button.setAttribute('aria-pressed',String(Boolean(targetNight)));
+        button.querySelector('span').textContent = targetNight?'День':'Ночь';
+        button.querySelector('use').setAttribute('href',targetNight?'#i-sun':'#i-moon');
+      });
+      document.getElementById('feed').addEventListener('click',event => {
+        if (food.length > 12) { notify('Угощение ещё осталось. Дадим рыбкам поесть.'); return; }
+        for (let i = 0; i < 12; i++) food.push({position:[range(-1.4,1.4),range(4.65,4.95),range(-1,1)],life:24});
+        notify(paused?'Корм добавлен. Нажмите «Продолжить».':'Угощение в воде. Рыбки уже спешат!');
+        const button = event.currentTarget;
+        button.disabled = true;
+        setTimeout(() => { if (!stopped) button.disabled = false; },3500);
+      });
+      function resetCamera() { Object.assign(cameraTarget,{yaw:0.29,pitch:0.29,zoom:1}); }
+      document.getElementById('reset').addEventListener('click',resetCamera);
+
+      const pointers = new Map();
+      let pinchDistance = 0;
+      const distanceBetweenPointers = () => { const points = [...pointers.values()]; return Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y); };
+      canvas.addEventListener('pointerdown',event => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+        canvas.setPointerCapture(event.pointerId);
+        canvas.classList.add('dragging');
+        if (pointers.size === 2) pinchDistance = distanceBetweenPointers();
+      });
+      canvas.addEventListener('pointermove',event => {
+        const previous = pointers.get(event.pointerId);
+        if (!previous) return;
+        pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+        if (pointers.size === 2) {
+          const distance = distanceBetweenPointers();
+          if (distance > 0 && pinchDistance > 0) cameraTarget.zoom = clamp(cameraTarget.zoom*pinchDistance/distance,0.72,1.5);
+          pinchDistance = distance;
+        } else if (pointers.size === 1) {
+          cameraTarget.yaw -= (event.clientX-previous.x)*0.005;
+          cameraTarget.pitch = clamp(cameraTarget.pitch+(event.clientY-previous.y)*0.004,0.08,0.75);
+        }
+      });
+      function releasePointer(event) {
+        pointers.delete(event.pointerId);
+        if (!pointers.size) canvas.classList.remove('dragging');
+        pinchDistance = 0;
+      }
+      canvas.addEventListener('pointerup',releasePointer);
+      canvas.addEventListener('pointercancel',releasePointer);
+      canvas.addEventListener('lostpointercapture',releasePointer);
+      canvas.addEventListener('wheel',event => {
+        event.preventDefault();
+        const delta = event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?canvas.clientHeight:1);
+        cameraTarget.zoom = clamp(cameraTarget.zoom*Math.exp(clamp(delta,-200,200)*0.001),0.72,1.5);
+      },{passive:false});
+      canvas.addEventListener('keydown',event => {
+        const actions = {
+          ArrowLeft:() => { cameraTarget.yaw -= 0.12; }, ArrowRight:() => { cameraTarget.yaw += 0.12; },
+          ArrowUp:() => { cameraTarget.pitch = clamp(cameraTarget.pitch+0.07,0.08,0.75); },
+          ArrowDown:() => { cameraTarget.pitch = clamp(cameraTarget.pitch-0.07,0.08,0.75); },
+          '+':() => { cameraTarget.zoom = clamp(cameraTarget.zoom-0.08,0.72,1.5); },
+          '=':() => { cameraTarget.zoom = clamp(cameraTarget.zoom-0.08,0.72,1.5); },
+          '-':() => { cameraTarget.zoom = clamp(cameraTarget.zoom+0.08,0.72,1.5); }, Home:resetCamera
+        };
+        if (actions[event.key]) { event.preventDefault(); actions[event.key](); }
+      });
+      document.addEventListener('visibilitychange',() => { lastFrame = performance.now(); });
+      canvas.addEventListener('webglcontextlost',event => {
+        event.preventDefault(); stopped = true; cancelAnimationFrame(animationFrame);
+        fail('Браузер прервал 3D-отрисовку. Нажмите «Попробовать ещё раз», чтобы вернуть аквариум.');
+      });
+      animationFrame = requestAnimationFrame(render);
+    }
+  })();
+  </script>
+</body>
+</html>
