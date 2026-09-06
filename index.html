@@ -167,6 +167,7 @@
       }
 
       const sceneProgram = program(`
+        precision mediump float;
         attribute vec3 aPosition;
         attribute vec3 aNormal;
         attribute vec4 aColor;
@@ -519,6 +520,7 @@
       }
 
       const dustProgram = program(`
+        precision mediump float;
         attribute vec3 aPosition;
         uniform mat4 uViewProjection;
         uniform float uTime;
