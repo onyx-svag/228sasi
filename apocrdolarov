@@ -1,0 +1,4434 @@
+local P = {}
+local function normalizeIterator(value, state, control)
+    if type(value) ~= "function" then
+        local meta = getmetatable(value)
+        if meta and meta.__iter then
+            return meta.__iter(value)
+        elseif (not meta or not meta.__call) and type(value) == "table" then
+            return pairs(value)
+        end
+    end
+    return value, state, control
+end
+
+
+P.main = function(U, ENV)
+    return function(...)
+        local R = table.create(60)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[1] = ENV.game
+                R[3] = "HttpService"
+                R[2] = R[1]
+                R[1] = R[1].GetService
+                R[1] = R[1](R[2], R[3])
+                R[2] = ENV.syn
+                if R[2] then block = 7 else block = 10 end
+            elseif block == 7 then
+                R[3] = ENV.syn
+                R[2] = R[3].request
+                block = 10
+            elseif block == 10 then
+                if R[2] then block = 11 else block = 12 end
+            elseif block == 11 then
+                if R[2] then block = 14 else block = 658 end
+            elseif block == 12 then
+                R[2] = ENV.request
+                block = 11
+            elseif block == 14 then
+                R[3] = ENV.pcall
+                R[4] = P.main_18({capture(1), capture(2)}, ENV)
+                R[3], R[4] = R[3](R[4])
+                R[5] = ENV.game
+                R[7] = "HttpService"
+                R[6] = R[5]
+                R[5] = R[5].GetService
+                R[5] = R[5](R[6], R[7])
+                R[6] = ENV.loadstring
+                R[7] = ENV.game
+                R[9] = "https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/Library.lua"
+                R[8] = R[7]
+                R[7] = R[7].HttpGet
+                do
+                    local values = table.pack(R[7](R[8], R[9]))
+                    table.move(values, 1, values.n, 7, R)
+                    TOP = 7 + values.n - 1
+                end
+                R[6] = R[6](table.unpack(R, 7, TOP))
+                R[6] = R[6]()
+                R[7] = ENV.loadstring
+                R[8] = ENV.game
+                R[10] = "https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/addons/ThemeManager.lua"
+                R[9] = R[8]
+                R[8] = R[8].HttpGet
+                do
+                    local values = table.pack(R[8](R[9], R[10]))
+                    table.move(values, 1, values.n, 8, R)
+                    TOP = 8 + values.n - 1
+                end
+                R[7] = R[7](table.unpack(R, 8, TOP))
+                R[7] = R[7]()
+                R[8] = ENV.loadstring
+                R[9] = ENV.game
+                R[11] = "https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/addons/SaveManager.lua"
+                R[10] = R[9]
+                R[9] = R[9].HttpGet
+                do
+                    local values = table.pack(R[9](R[10], R[11]))
+                    table.move(values, 1, values.n, 9, R)
+                    TOP = 9 + values.n - 1
+                end
+                R[8] = R[8](table.unpack(R, 9, TOP))
+                R[8] = R[8]()
+                R[10] = {}
+                R[12] = {}
+                R[13] = 1
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"121212\",\"AccentColor\":\"00ff6a\",\"BackgroundColor\":\"0a0a0a\",\"OutlineColor\":\"1f1f1f\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Dolarovhub = R[11]
+                R[12] = {}
+                R[13] = 2
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"1c1c1c\",\"AccentColor\":\"0055ff\",\"BackgroundColor\":\"141414\",\"OutlineColor\":\"323232\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Blue = R[11]
+                R[12] = {}
+                R[13] = 3
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"1e1e1e\",\"AccentColor\":\"7e48a3\",\"BackgroundColor\":\"232323\",\"OutlineColor\":\"141414\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].BBot = R[11]
+                R[12] = {}
+                R[13] = 4
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"1e1842\",\"AccentColor\":\"c50754\",\"BackgroundColor\":\"191335\",\"OutlineColor\":\"3c355d\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Fatality = R[11]
+                R[12] = {}
+                R[13] = 5
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"242424\",\"AccentColor\":\"db4467\",\"BackgroundColor\":\"1c1c1c\",\"OutlineColor\":\"373737\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Jester = R[11]
+                R[12] = {}
+                R[13] = 6
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"242424\",\"AccentColor\":\"3db488\",\"BackgroundColor\":\"1c1c1c\",\"OutlineColor\":\"373737\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Mint = R[11]
+                R[12] = {}
+                R[13] = 7
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"191925\",\"AccentColor\":\"6759b3\",\"BackgroundColor\":\"16161f\",\"OutlineColor\":\"323232\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10]["Tokyo Night"] = R[11]
+                R[12] = {}
+                R[13] = 8
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"3e3e3e\",\"AccentColor\":\"e2581e\",\"BackgroundColor\":\"323232\",\"OutlineColor\":\"191919\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Ubuntu = R[11]
+                R[12] = {}
+                R[13] = 9
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"232330\",\"AccentColor\":\"426e87\",\"BackgroundColor\":\"1d1b26\",\"OutlineColor\":\"27232f\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Quartz = R[11]
+                R[12] = {}
+                R[13] = 10
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"232323\",\"AccentColor\":\"a5e042\",\"BackgroundColor\":\"1a1a1a\",\"OutlineColor\":\"3c3c3c\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Gamesense = R[11]
+                R[12] = {}
+                R[13] = 11
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"121212\",\"AccentColor\":\"ff007f\",\"BackgroundColor\":\"080808\",\"OutlineColor\":\"252525\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10]["Neon Pink"] = R[11]
+                R[12] = {}
+                R[13] = 12
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"080d14\",\"AccentColor\":\"00bdff\",\"BackgroundColor\":\"050508\",\"OutlineColor\":\"1a1f29\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Neverlose = R[11]
+                R[12] = {}
+                R[13] = 13
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"1c1c21\",\"AccentColor\":\"ffaa00\",\"BackgroundColor\":\"141417\",\"OutlineColor\":\"2a2a30\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Onetap = R[11]
+                R[12] = {}
+                R[13] = 14
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"1b1b1b\",\"AccentColor\":\"f02d2d\",\"BackgroundColor\":\"141414\",\"OutlineColor\":\"323232\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Aimware = R[11]
+                R[12] = {}
+                R[13] = 15
+                R[16] = "{\"FontColor\":\"ffffff\",\"MainColor\":\"151515\",\"AccentColor\":\"465675\",\"BackgroundColor\":\"0b0b0b\",\"OutlineColor\":\"202020\"}"
+                R[15] = R[5]
+                R[14] = R[5].JSONDecode
+                do
+                    local values = table.pack(R[14](R[15], R[16]))
+                    table.move(values, 1, values.n, 14, R)
+                    TOP = 14 + values.n - 1
+                end
+                table.move(R, 13, ((13 + ((TOP - 13) + 1)) - 1), 1, R[12])
+                R[11] = R[12]
+                R[10].Primordial = R[11]
+                R[9] = R[10]
+                R[7].BuiltInThemes = R[9]
+                R[9] = ENV.game
+                R[11] = "Players"
+                R[10] = R[9]
+                R[9] = R[9].GetService
+                R[9] = R[9](R[10], R[11])
+                R[10] = ENV.game
+                R[12] = "RunService"
+                R[11] = R[10]
+                R[10] = R[10].GetService
+                R[10] = R[10](R[11], R[12])
+                R[11] = ENV.game
+                R[13] = "UserInputService"
+                R[12] = R[11]
+                R[11] = R[11].GetService
+                R[11] = R[11](R[12], R[13])
+                R[13] = ENV.workspace
+                R[12] = R[13].CurrentCamera
+                R[13] = R[9].LocalPlayer
+                R[16] = {}
+                R[17] = "dolarovhub | Apocalypse Rising 2"
+                R[16].Title = R[17]
+                R[17] = true
+                R[16].Center = R[17]
+                R[16].AutoShow = R[17]
+                R[17] = 8
+                R[16].TabPadding = R[17]
+                R[17] = 0.2
+                R[16].MenuFadeTime = R[17]
+                R[15] = R[6]
+                R[14] = R[6].CreateWindow
+                R[14] = R[14](R[15], R[16])
+                R[16] = {}
+                R[19] = "Combat"
+                R[18] = R[14]
+                R[17] = R[14].AddTab
+                R[17] = R[17](R[18], R[19])
+                R[16].Combat = R[17]
+                R[19] = "Visuals"
+                R[18] = R[14]
+                R[17] = R[14].AddTab
+                R[17] = R[17](R[18], R[19])
+                R[16].Visuals = R[17]
+                R[19] = "Misc"
+                R[18] = R[14]
+                R[17] = R[14].AddTab
+                R[17] = R[17](R[18], R[19])
+                R[16].Movement = R[17]
+                R[19] = "Settings"
+                R[18] = R[14]
+                R[17] = R[14].AddTab
+                R[17] = R[17](R[18], R[19])
+                R[16].Settings = R[17]
+                R[15] = R[16]
+                R[16] = R[15].Combat
+                R[18] = "Aimbot"
+                R[17] = R[16]
+                R[16] = R[16].AddLeftGroupbox
+                R[16] = R[16](R[17], R[18])
+                R[17] = R[15].Combat
+                R[19] = "FOV Settings"
+                R[18] = R[17]
+                R[17] = R[17].AddRightGroupbox
+                R[17] = R[17](R[18], R[19])
+                R[18] = R[15].Visuals
+                R[20] = "Colors"
+                R[19] = R[18]
+                R[18] = R[18].AddRightGroupbox
+                R[18] = R[18](R[19], R[20])
+                R[19] = R[15].Movement
+                R[21] = "Movement"
+                R[20] = R[19]
+                R[19] = R[19].AddRightGroupbox
+                R[19] = R[19](R[20], R[21])
+                R[20] = R[15].Movement
+                R[22] = "Miscellaneous"
+                R[21] = R[20]
+                R[20] = R[20].AddLeftGroupbox
+                R[20] = R[20](R[21], R[22])
+                R[21] = false
+                R[23] = ENV.Drawing
+                R[22] = R[23].new
+                R[23] = "Circle"
+                R[22] = R[22](R[23])
+                R[23] = 1
+                R[24] = 64
+                R[25] = false
+                R[22].Thickness = R[23]
+                R[22].NumSides = R[24]
+                R[22].Filled = R[25]
+                R[23] = P.main_8({capture(9)}, ENV)
+                R[24] = P.main_3({capture(12), capture(11), capture(13), capture(9)}, ENV)
+                R[27] = "AimbotEnabled"
+                R[28] = {}
+                R[29] = "Enable Aimbot"
+                R[28].Text = R[29]
+                R[29] = R[25]
+                R[28].Default = R[29]
+                R[26] = R[16]
+                R[25] = R[16].AddToggle
+                R[25](R[26], R[27], R[28])
+                R[27] = "Aimbot Key"
+                R[26] = R[16]
+                R[25] = R[16].AddLabel
+                R[25] = R[25](R[26], R[27])
+                R[27] = "AimBind"
+                R[28] = {}
+                R[29] = "MB2"
+                R[28].Default = R[29]
+                R[29] = false
+                R[28].SyncToggleState = R[29]
+                R[29] = "Hold"
+                R[28].Mode = R[29]
+                R[29] = "Aimbot Key"
+                R[28].Text = R[29]
+                R[26] = R[25]
+                R[25] = R[25].AddKeyPicker
+                R[25](R[26], R[27], R[28])
+                R[27] = "AimPart"
+                R[28] = {}
+                R[29] = "Target Part"
+                R[28].Text = R[29]
+                R[29] = 1
+                R[28].Default = R[29]
+                R[30] = {}
+                R[31] = "Head"
+                R[32] = "HeadCollider"
+                R[33] = "UpperTorso"
+                R[34] = "HumanoidRootPart"
+                table.move(R, 31, 34, 1, R[30])
+                R[29] = R[30]
+                R[28].Values = R[29]
+                R[26] = R[16]
+                R[25] = R[16].AddDropdown
+                R[25](R[26], R[27], R[28])
+                R[27] = "AimSmooth"
+                R[28] = {}
+                R[29] = "Smoothness"
+                R[28].Text = R[29]
+                R[29] = 0.1
+                R[28].Default = R[29]
+                R[29] = 0.01
+                R[28].Min = R[29]
+                R[29] = 1
+                R[28].Max = R[29]
+                R[29] = 2
+                R[28].Rounding = R[29]
+                R[26] = R[16]
+                R[25] = R[16].AddSlider
+                R[25](R[26], R[27], R[28])
+                R[27] = "AimPredict"
+                R[28] = {}
+                R[29] = "Prediction Multiplier"
+                R[28].Text = R[29]
+                R[29] = 1.5
+                R[28].Default = R[29]
+                R[29] = 0
+                R[28].Min = R[29]
+                R[29] = 10
+                R[28].Max = R[29]
+                R[29] = 1
+                R[28].Rounding = R[29]
+                R[26] = R[16]
+                R[25] = R[16].AddSlider
+                R[25](R[26], R[27], R[28])
+                R[27] = "MaxDistance"
+                R[28] = {}
+                R[29] = "Max Distance"
+                R[28].Text = R[29]
+                R[29] = 1000
+                R[28].Default = R[29]
+                R[29] = 50
+                R[28].Min = R[29]
+                R[29] = 3000
+                R[28].Max = R[29]
+                R[29] = 0
+                R[28].Rounding = R[29]
+                R[29] = false
+                R[28].Compact = R[29]
+                R[26] = R[16]
+                R[25] = R[16].AddSlider
+                R[25](R[26], R[27], R[28])
+                R[27] = "ShowFov"
+                R[28] = {}
+                R[29] = "Show FOV Circle"
+                R[28].Text = R[29]
+                R[29] = false
+                R[28].Default = R[29]
+                R[26] = R[17]
+                R[25] = R[17].AddToggle
+                R[25](R[26], R[27], R[28])
+                R[27] = "FovRadius"
+                R[28] = {}
+                R[29] = "FOV Radius"
+                R[28].Text = R[29]
+                R[29] = 100
+                R[28].Default = R[29]
+                R[29] = 10
+                R[28].Min = R[29]
+                R[29] = 600
+                R[28].Max = R[29]
+                R[29] = 0
+                R[28].Rounding = R[29]
+                R[26] = R[17]
+                R[25] = R[17].AddSlider
+                R[25](R[26], R[27], R[28])
+                R[27] = "FOV Color"
+                R[26] = R[17]
+                R[25] = R[17].AddLabel
+                R[25] = R[25](R[26], R[27])
+                R[27] = "FovColor"
+                R[28] = {}
+                R[30] = ENV.Color3
+                R[29] = R[30].new
+                R[30] = 1
+                R[31] = 1
+                R[32] = 1
+                R[29] = R[29](R[30], R[31], R[32])
+                R[28].Default = R[29]
+                R[26] = R[25]
+                R[25] = R[25].AddColorPicker
+                R[25](R[26], R[27], R[28])
+                R[25] = R[15].Visuals
+                R[26] = R[25]
+                R[25] = R[25].AddLeftTabbox
+                R[25] = R[25](R[26])
+                R[28] = "ESP"
+                R[27] = R[25]
+                R[26] = R[25].AddTab
+                R[26] = R[26](R[27], R[28])
+                R[29] = "World"
+                R[28] = R[25]
+                R[27] = R[25].AddTab
+                R[27] = R[27](R[28], R[29])
+                R[30] = "EspMaster"
+                R[31] = {}
+                R[32] = "Enable ESP"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[26]
+                R[28] = R[26].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "ShowBox"
+                R[31] = {}
+                R[32] = "Show Boxes"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[26]
+                R[28] = R[26].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "ShowFill"
+                R[31] = {}
+                R[32] = "Show Fill"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[26]
+                R[28] = R[26].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "ShowName"
+                R[31] = {}
+                R[32] = "Show Names"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[26]
+                R[28] = R[26].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "ShowStuds"
+                R[31] = {}
+                R[32] = "Show Distance"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[26]
+                R[28] = R[26].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "ShowHealth"
+                R[31] = {}
+                R[32] = "Show Health"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[26]
+                R[28] = R[26].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "CorpseESP"
+                R[31] = {}
+                R[32] = "Corpse ESP"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "CorpseNames"
+                R[31] = {}
+                R[32] = "Corpse Names"
+                R[31].Text = R[32]
+                R[32] = true
+                R[31].Default = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "CorpseHighlight"
+                R[31] = {}
+                R[32] = "Corpse Highlight"
+                R[31].Text = R[32]
+                R[32] = true
+                R[31].Default = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "CorpseDistance"
+                R[31] = {}
+                R[32] = "Corpse Distance"
+                R[31].Text = R[32]
+                R[32] = 3000
+                R[31].Default = R[32]
+                R[32] = 0
+                R[31].Min = R[32]
+                R[32] = 10000
+                R[31].Max = R[32]
+                R[32] = 0
+                R[31].Rounding = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddSlider
+                R[28](R[29], R[30], R[31])
+                R[30] = "HeliESP"
+                R[31] = {}
+                R[32] = "HeliCrash ESP"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "HeliTracers"
+                R[31] = {}
+                R[32] = "Heli Tracers"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "VehicleESP"
+                R[31] = {}
+                R[32] = "Vehicle ESP"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "VehicleTracers"
+                R[31] = {}
+                R[32] = "Vehicle Tracers"
+                R[31].Text = R[32]
+                R[32] = false
+                R[31].Default = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddToggle
+                R[28](R[29], R[30], R[31])
+                R[30] = "VehicleDistance"
+                R[31] = {}
+                R[32] = "Vehicle Distance"
+                R[31].Text = R[32]
+                R[32] = 4000
+                R[31].Default = R[32]
+                R[32] = 0
+                R[31].Min = R[32]
+                R[32] = 10000
+                R[31].Max = R[32]
+                R[32] = 0
+                R[31].Rounding = R[32]
+                R[29] = R[27]
+                R[28] = R[27].AddSlider
+                R[28](R[29], R[30], R[31])
+                R[28] = ENV.game
+                R[30] = "Players"
+                R[29] = R[28]
+                R[28] = R[28].GetService
+                R[28] = R[28](R[29], R[30])
+                R[29] = R[28].LocalPlayer
+                R[31] = {}
+                R[30] = R[31]
+                R[33] = "FFToggle"
+                R[34] = {}
+                R[35] = "Self Forcefield"
+                R[34].Text = R[35]
+                R[35] = false
+                R[34].Default = R[35]
+                R[32] = R[27]
+                R[31] = R[27].AddToggle
+                R[31](R[32], R[33], R[34])
+                R[32] = ENV.Toggles
+                R[31] = R[32].FFToggle
+                R[33] = "FFColor"
+                R[34] = {}
+                R[36] = ENV.Color3
+                R[35] = R[36].fromRGB
+                R[36] = 0
+                R[37] = 255
+                R[38] = 255
+                R[35] = R[35](R[36], R[37], R[38])
+                R[34].Default = R[35]
+                R[35] = "Forcefield Color"
+                R[34].Title = R[35]
+                R[32] = R[31]
+                R[31] = R[31].AddColorPicker
+                R[31](R[32], R[33], R[34])
+                R[31] = P.main_7({capture(30), capture(29)}, ENV)
+                R[33] = ENV.Toggles
+                R[32] = R[33].FFToggle
+                R[34] = R[31]
+                R[33] = R[32]
+                R[32] = R[32].OnChanged
+                R[32](R[33], R[34])
+                R[33] = ENV.Options
+                R[32] = R[33].FFColor
+                R[34] = R[31]
+                R[33] = R[32]
+                R[32] = R[32].OnChanged
+                R[32](R[33], R[34])
+                R[32] = R[29].CharacterAdded
+                R[34] = P.main_26({capture(31), capture(30)}, ENV)
+                R[33] = R[32]
+                R[32] = R[32].Connect
+                R[32](R[33], R[34])
+                R[34] = "Box Color"
+                R[33] = R[18]
+                R[32] = R[18].AddLabel
+                R[32] = R[32](R[33], R[34])
+                R[34] = "BoxCol"
+                R[35] = {}
+                R[37] = ENV.Color3
+                R[36] = R[37].fromRGB
+                R[37] = 180
+                R[38] = 0
+                R[39] = 255
+                R[36] = R[36](R[37], R[38], R[39])
+                R[35].Default = R[36]
+                R[33] = R[32]
+                R[32] = R[32].AddColorPicker
+                R[32](R[33], R[34], R[35])
+                R[34] = "Fill Color"
+                R[33] = R[18]
+                R[32] = R[18].AddLabel
+                R[32] = R[32](R[33], R[34])
+                R[34] = "FillCol"
+                R[35] = {}
+                R[37] = ENV.Color3
+                R[36] = R[37].fromRGB
+                R[37] = 45
+                R[38] = 20
+                R[39] = 70
+                R[36] = R[36](R[37], R[38], R[39])
+                R[35].Default = R[36]
+                R[33] = R[32]
+                R[32] = R[32].AddColorPicker
+                R[32](R[33], R[34], R[35])
+                R[34] = "Name Color"
+                R[33] = R[18]
+                R[32] = R[18].AddLabel
+                R[32] = R[32](R[33], R[34])
+                R[34] = "NameCol"
+                R[35] = {}
+                R[37] = ENV.Color3
+                R[36] = R[37].new
+                R[37] = 1
+                R[38] = 1
+                R[39] = 1
+                R[36] = R[36](R[37], R[38], R[39])
+                R[35].Default = R[36]
+                R[33] = R[32]
+                R[32] = R[32].AddColorPicker
+                R[32](R[33], R[34], R[35])
+                R[34] = "Dist Color"
+                R[33] = R[18]
+                R[32] = R[18].AddLabel
+                R[32] = R[32](R[33], R[34])
+                R[34] = "DistCol"
+                R[35] = {}
+                R[37] = ENV.Color3
+                R[36] = R[37].new
+                R[37] = 0.8
+                R[38] = R[37]
+                R[39] = R[38]
+                R[36] = R[36](R[37], R[38], R[39])
+                R[35].Default = R[36]
+                R[33] = R[32]
+                R[32] = R[32].AddColorPicker
+                R[32](R[33], R[34], R[35])
+                R[34] = "Corpses Color"
+                R[33] = R[18]
+                R[32] = R[18].AddLabel
+                R[32] = R[32](R[33], R[34])
+                R[34] = "corpCol"
+                R[35] = {}
+                R[37] = ENV.Color3
+                R[36] = R[37].new
+                R[37] = R[38]
+                R[39] = R[38]
+                R[36] = R[36](R[37], R[38], R[39])
+                R[35].Default = R[36]
+                R[33] = R[32]
+                R[32] = R[32].AddColorPicker
+                R[32](R[33], R[34], R[35])
+                R[34] = "InfJump"
+                R[35] = {}
+                R[36] = "Infinite Jump"
+                R[35].Text = R[36]
+                R[36] = false
+                R[35].Default = R[36]
+                R[33] = R[19]
+                R[32] = R[19].AddToggle
+                R[32](R[33], R[34], R[35])
+                R[34] = "JumpPower"
+                R[35] = {}
+                R[36] = "Jump Power"
+                R[35].Text = R[36]
+                R[36] = 35
+                R[35].Default = R[36]
+                R[36] = 10
+                R[35].Min = R[36]
+                R[36] = 100
+                R[35].Max = R[36]
+                R[36] = 0
+                R[35].Rounding = R[36]
+                R[33] = R[19]
+                R[32] = R[19].AddSlider
+                R[32](R[33], R[34], R[35])
+                R[32] = nil
+                R[33] = R[10].RenderStepped
+                R[35] = P.main_1({capture(32), capture(29), capture(11), capture(28), capture(24), capture(6), capture(12), capture(22)}, ENV)
+                R[34] = R[33]
+                R[33] = R[33].Connect
+                R[33](R[34], R[35])
+                R[33] = 0
+                R[34] = 0
+                R[35] = "0"
+                R[36] = R[10].RenderStepped
+                R[38] = P.main_15({capture(6), capture(34), capture(33), capture(35)}, ENV)
+                R[37] = R[36]
+                R[36] = R[36].Connect
+                R[36](R[37], R[38])
+                R[36] = ENV.game
+                R[38] = "Players"
+                R[37] = R[36]
+                R[36] = R[36].GetService
+                R[36] = R[36](R[37], R[38])
+                R[38] = {}
+                R[37] = R[38]
+                R[39] = {}
+                R[38] = R[39]
+                R[39] = P.main_22({capture(36), capture(29)}, ENV)
+                R[40] = P.main_5({capture(39), capture(38)}, ENV)
+                R[41] = P.main_2({capture(38)}, ENV)
+                R[42] = ENV.pairs
+                R[44] = ENV.workspace
+                R[43] = R[44].Corpses
+                R[44] = R[43]
+                R[43] = R[43].GetChildren
+                do
+                    local values = table.pack(R[43](R[44]))
+                    table.move(values, 1, values.n, 43, R)
+                    TOP = 43 + values.n - 1
+                end
+                R[42], R[43], R[44] = R[42](table.unpack(R, 43, TOP))
+                R[42], R[43], R[44] = normalizeIterator(R[42], R[43], R[44])
+                R[45], R[46] = R[42](R[43], R[44])
+                R[44] = R[45]
+                if (R[44] == nil) then block = 664 else block = 660 end
+            elseif block == 658 then
+                R[2] = ENV.http_request
+                block = 14
+            elseif block == 660 then
+                R[49] = "Model"
+                R[48] = R[46]
+                R[47] = R[46].IsA
+                R[47] = R[47](R[48], R[49])
+                if R[47] then block = 693 else block = 703 end
+            elseif block == 664 then
+                R[44] = ENV.workspace
+                R[43] = R[44].Corpses
+                R[42] = R[43].ChildAdded
+                R[44] = P.main_4({capture(40)}, ENV)
+                R[43] = R[42]
+                R[42] = R[42].Connect
+                R[42](R[43], R[44])
+                R[44] = ENV.workspace
+                R[43] = R[44].Corpses
+                R[42] = R[43].ChildRemoved
+                R[44] = R[41]
+                R[43] = R[42]
+                R[42] = R[42].Connect
+                R[42](R[43], R[44])
+                R[42] = R[10].RenderStepped
+                R[44] = P.main_29({capture(41), capture(38), capture(29), capture(39)}, ENV)
+                R[43] = R[42]
+                R[42] = R[42].Connect
+                R[42](R[43], R[44])
+                R[43] = {}
+                R[42] = R[43]
+                R[43] = P.main_27({capture(42)}, ENV)
+                R[44] = ENV.workspace
+                R[46] = "Map"
+                R[45] = R[44]
+                R[44] = R[44].FindFirstChild
+                R[44] = R[44](R[45], R[46])
+                if R[44] then block = 696 else block = 702 end
+            elseif block == 693 then
+                R[47] = R[40]
+                R[48] = R[46]
+                R[47](R[48])
+                block = 703
+            elseif block == 696 then
+                R[45] = ENV.workspace
+                R[44] = R[45].Map
+                R[46] = "Shared"
+                R[45] = R[44]
+                R[44] = R[44].FindFirstChild
+                R[44] = R[44](R[45], R[46])
+                block = 702
+            elseif block == 702 then
+                if R[44] then block = 704 else block = 711 end
+            elseif block == 703 then
+                R[45], R[46] = R[42](R[43], R[44])
+                R[44] = R[45]
+                if (R[44] == nil) then block = 664 else block = 660 end
+            elseif block == 704 then
+                R[46] = ENV.workspace
+                R[45] = R[46].Map
+                R[44] = R[45].Shared
+                R[46] = "LootBins"
+                R[45] = R[44]
+                R[44] = R[44].FindFirstChild
+                R[44] = R[44](R[45], R[46])
+                block = 711
+            elseif block == 711 then
+                if R[44] then block = 712 else block = 717 end
+            elseif block == 712 then
+                R[45] = ENV.pairs
+                R[47] = R[44]
+                R[46] = R[44].GetChildren
+                do
+                    local values = table.pack(R[46](R[47]))
+                    table.move(values, 1, values.n, 46, R)
+                    TOP = 46 + values.n - 1
+                end
+                R[45], R[46], R[47] = R[45](table.unpack(R, 46, TOP))
+                R[45], R[46], R[47] = normalizeIterator(R[45], R[46], R[47])
+                R[48], R[49] = R[45](R[46], R[47])
+                R[47] = R[48]
+                if (R[47] == nil) then block = 735 else block = 731 end
+            elseif block == 717 then
+                R[45] = R[10].RenderStepped
+                R[47] = P.main_21({capture(29), capture(42)}, ENV)
+                R[46] = R[45]
+                R[45] = R[45].Connect
+                R[45](R[46], R[47])
+                R[46] = {}
+                R[45] = R[46]
+                R[46] = P.main_19({capture(45)}, ENV)
+                R[47] = ENV.workspace
+                R[49] = "Vehicles"
+                R[48] = R[47]
+                R[47] = R[47].FindFirstChild
+                R[47] = R[47](R[48], R[49])
+                if R[47] then block = 741 else block = 747 end
+            elseif block == 731 then
+                R[52] = "Folder"
+                R[51] = R[49]
+                R[50] = R[49].IsA
+                R[50] = R[50](R[51], R[52])
+                if R[50] then block = 748 else block = 753 end
+            elseif block == 735 then
+                R[45] = R[44].ChildAdded
+                R[47] = P.main_16({capture(43)}, ENV)
+                R[46] = R[45]
+                R[45] = R[45].Connect
+                R[45](R[46], R[47])
+                block = 717
+            elseif block == 741 then
+                R[48] = ENV.workspace
+                R[47] = R[48].Vehicles
+                R[49] = "Spawned"
+                R[48] = R[47]
+                R[47] = R[47].FindFirstChild
+                R[47] = R[47](R[48], R[49])
+                block = 747
+            elseif block == 747 then
+                if R[47] then block = 754 else block = 759 end
+            elseif block == 748 then
+                R[50] = R[49].Name
+                R[52] = "SeahawkCrashsite"
+                R[51] = R[50]
+                R[50] = R[50].match
+                R[50] = R[50](R[51], R[52])
+                block = 753
+            elseif block == 753 then
+                if R[50] then block = 792 else block = 798 end
+            elseif block == 754 then
+                R[48] = ENV.pairs
+                R[50] = R[47]
+                R[49] = R[47].GetChildren
+                do
+                    local values = table.pack(R[49](R[50]))
+                    table.move(values, 1, values.n, 49, R)
+                    TOP = 49 + values.n - 1
+                end
+                R[48], R[49], R[50] = R[48](table.unpack(R, 49, TOP))
+                R[48], R[49], R[50] = normalizeIterator(R[48], R[49], R[50])
+                R[51], R[52] = R[48](R[49], R[50])
+                R[50] = R[51]
+                if (R[50] == nil) then block = 803 else block = 799 end
+            elseif block == 759 then
+                R[48] = R[10].RenderStepped
+                R[50] = P.main_6({capture(29), capture(45)}, ENV)
+                R[49] = R[48]
+                R[48] = R[48].Connect
+                R[48](R[49], R[50])
+                R[49] = ENV.Instance
+                R[48] = R[49].new
+                R[49] = "Folder"
+                R[48] = R[48](R[49])
+                R[49] = "DolarovESP"
+                R[48].Name = R[49]
+                R[51] = "PlayerGui"
+                R[50] = R[29]
+                R[49] = R[29].WaitForChild
+                R[49] = R[49](R[50], R[51])
+                R[48].Parent = R[49]
+                R[50] = {}
+                R[49] = R[50]
+                R[50] = P.main_24({capture(48), capture(23), capture(29), capture(12), capture(10), capture(49), capture(36)}, ENV)
+                R[51] = P.main_14({capture(50), capture(29)}, ENV)
+                R[52] = ENV.ipairs
+                R[54] = R[36]
+                R[53] = R[36].GetPlayers
+                do
+                    local values = table.pack(R[53](R[54]))
+                    table.move(values, 1, values.n, 53, R)
+                    TOP = 53 + values.n - 1
+                end
+                R[52], R[53], R[54] = R[52](table.unpack(R, 53, TOP))
+                R[52], R[53], R[54] = normalizeIterator(R[52], R[53], R[54])
+                R[55], R[56] = R[52](R[53], R[54])
+                R[54] = R[55]
+                if (R[54] == nil) then block = 812 else block = 809 end
+            elseif block == 792 then
+                R[51] = R[49].Name
+                R[53] = "Rogue"
+                R[52] = R[51]
+                R[51] = R[51].match
+                R[51] = R[51](R[52], R[53])
+                R[50] = (not R[51])
+                block = 798
+            elseif block == 798 then
+                if R[50] then block = 950 else block = 957 end
+            elseif block == 799 then
+                R[55] = "Model"
+                R[54] = R[52]
+                R[53] = R[52].IsA
+                R[53] = R[53](R[54], R[55])
+                if R[53] then block = 953 else block = 958 end
+            elseif block == 803 then
+                R[48] = R[47].ChildAdded
+                R[50] = P.main_30({capture(46)}, ENV)
+                R[49] = R[48]
+                R[48] = R[48].Connect
+                R[48](R[49], R[50])
+                block = 759
+            elseif block == 809 then
+                R[57] = R[51]
+                R[58] = R[56]
+                R[57](R[58])
+                R[55], R[56] = R[52](R[53], R[54])
+                R[54] = R[55]
+                if (R[54] == nil) then block = 812 else block = 809 end
+            elseif block == 812 then
+                R[52] = R[36].PlayerAdded
+                R[54] = R[51]
+                R[53] = R[52]
+                R[52] = R[52].Connect
+                R[52](R[53], R[54])
+                R[54] = "MuteZombies"
+                R[55] = {}
+                R[56] = "Mute Zombies"
+                R[55].Text = R[56]
+                R[56] = false
+                R[55].Default = R[56]
+                R[56] = P.main_13({}, ENV)
+                R[55].Callback = R[56]
+                R[53] = R[20]
+                R[52] = R[20].AddToggle
+                R[52](R[53], R[54], R[55])
+                R[52] = false
+                R[53] = 70
+                R[56] = "FOVEnabled"
+                R[57] = {}
+                R[58] = "Enable FOV Changer"
+                R[57].Text = R[58]
+                R[58] = false
+                R[57].Default = R[58]
+                R[58] = P.main_11({capture(52)}, ENV)
+                R[57].Callback = R[58]
+                R[55] = R[20]
+                R[54] = R[20].AddToggle
+                R[54](R[55], R[56], R[57])
+                R[56] = "FOVValue"
+                R[57] = {}
+                R[58] = "FOV Value"
+                R[57].Text = R[58]
+                R[58] = 70
+                R[57].Default = R[58]
+                R[58] = 70
+                R[57].Min = R[58]
+                R[58] = 120
+                R[57].Max = R[58]
+                R[58] = 0
+                R[57].Rounding = R[58]
+                R[58] = false
+                R[57].Compact = R[58]
+                R[58] = P.main_20({capture(53)}, ENV)
+                R[57].Callback = R[58]
+                R[55] = R[20]
+                R[54] = R[20].AddSlider
+                R[54](R[55], R[56], R[57])
+                R[55] = ENV.game
+                R[57] = "RunService"
+                R[56] = R[55]
+                R[55] = R[55].GetService
+                R[55] = R[55](R[56], R[57])
+                R[54] = R[55].RenderStepped
+                R[56] = P.main_12({capture(53), capture(52)}, ENV)
+                R[55] = R[54]
+                R[54] = R[54].Connect
+                R[54](R[55], R[56])
+                R[54] = R[15].Settings
+                R[56] = "Menu"
+                R[55] = R[54]
+                R[54] = R[54].AddLeftGroupbox
+                R[54] = R[54](R[55], R[56])
+                R[57] = "ShowWatermark"
+                R[58] = {}
+                R[59] = "Show Watermark"
+                R[58].Text = R[59]
+                R[59] = true
+                R[58].Default = R[59]
+                R[59] = P.main_28({capture(6)}, ENV)
+                R[58].Callback = R[59]
+                R[56] = R[54]
+                R[55] = R[54].AddToggle
+                R[55](R[56], R[57], R[58])
+                R[57] = "ShowKeybinds"
+                R[58] = {}
+                R[59] = "Show KeybindList"
+                R[58].Text = R[59]
+                R[59] = true
+                R[58].Default = R[59]
+                R[59] = P.main_25({capture(6)}, ENV)
+                R[58].Callback = R[59]
+                R[56] = R[54]
+                R[55] = R[54].AddToggle
+                R[55](R[56], R[57], R[58])
+                R[57] = "Unload"
+                R[58] = P.main_9({capture(6)}, ENV)
+                R[56] = R[54]
+                R[55] = R[54].AddButton
+                R[55](R[56], R[57], R[58])
+                R[57] = "Menu bind"
+                R[56] = R[54]
+                R[55] = R[54].AddLabel
+                R[55] = R[55](R[56], R[57])
+                R[57] = "MenuKeybind"
+                R[58] = {}
+                R[59] = "Insert"
+                R[58].Default = R[59]
+                R[59] = true
+                R[58].NoUI = R[59]
+                R[59] = "Menu keybind"
+                R[58].Text = R[59]
+                R[56] = R[55]
+                R[55] = R[55].AddKeyPicker
+                R[55](R[56], R[57], R[58])
+                R[56] = ENV.Options
+                R[55] = R[56].MenuKeybind
+                R[6].ToggleKeybind = R[55]
+                R[57] = R[6]
+                R[56] = R[7]
+                R[55] = R[7].SetLibrary
+                R[55](R[56], R[57])
+                R[57] = R[6]
+                R[56] = R[8]
+                R[55] = R[8].SetLibrary
+                R[55](R[56], R[57])
+                R[57] = "dolarovhub"
+                R[56] = R[7]
+                R[55] = R[7].SetFolder
+                R[55](R[56], R[57])
+                R[57] = "dolarovhub/AR2"
+                R[56] = R[8]
+                R[55] = R[8].SetFolder
+                R[55](R[56], R[57])
+                R[57] = R[15].Settings
+                R[56] = R[8]
+                R[55] = R[8].BuildConfigSection
+                R[55](R[56], R[57])
+                R[57] = R[15].Settings
+                R[56] = R[7]
+                R[55] = R[7].ApplyToTab
+                R[55](R[56], R[57])
+                R[56] = R[8]
+                R[55] = R[8].LoadAutoloadConfig
+                R[55](R[56])
+                R[57] = "Loaded!"
+                R[58] = 5
+                R[56] = R[6]
+                R[55] = R[6].Notify
+                R[55](R[56], R[57], R[58])
+                R[55] = R[11].InputBegan
+                R[57] = P.main_23({capture(21)}, ENV)
+                R[56] = R[55]
+                R[55] = R[55].Connect
+                R[55](R[56], R[57])
+                R[55] = R[11].InputEnded
+                R[57] = P.main_17({capture(21)}, ENV)
+                R[56] = R[55]
+                R[55] = R[55].Connect
+                R[55](R[56], R[57])
+                R[55] = R[10].Heartbeat
+                R[57] = P.main_10({capture(29), capture(21)}, ENV)
+                R[56] = R[55]
+                R[55] = R[55].Connect
+                R[55](R[56], R[57])
+                closeUpvalues(55)
+                return table.unpack(R, 1, 0)
+            elseif block == 950 then
+                R[50] = R[43]
+                R[51] = R[49]
+                R[50](R[51])
+                block = 957
+            elseif block == 953 then
+                R[53] = R[46]
+                R[54] = R[52]
+                R[53](R[54])
+                block = 958
+            elseif block == 957 then
+                R[48], R[49] = R[45](R[46], R[47])
+                R[47] = R[48]
+                if (R[47] == nil) then block = 735 else block = 731 end
+            elseif block == 958 then
+                R[51], R[52] = R[48](R[49], R[50])
+                R[50] = R[51]
+                if (R[50] == nil) then block = 803 else block = 799 end
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_1 = function(U, ENV)
+    return function(...)
+        local R = table.create(22)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[1] = U[8][2][U[8][1]]
+        R[4] = ENV.Toggles
+        R[3] = R[4].ShowFov
+        R[2] = R[3].Value
+        if R[2] then
+            R[4] = ENV.Toggles
+            R[3] = R[4].AimbotEnabled
+            R[2] = R[3].Value
+        else
+        end
+        R[1].Visible = R[2]
+        R[1] = U[8][2][U[8][1]]
+        R[4] = ENV.Options
+        R[3] = R[4].FovRadius
+        R[2] = R[3].Value
+        R[1].Radius = R[2]
+        R[1] = U[8][2][U[8][1]]
+        R[2] = U[3][2][U[3][1]]
+        R[3] = R[2]
+        R[2] = R[2].GetMouseLocation
+        R[2] = R[2](R[3])
+        R[1].Position = R[2]
+        R[1] = U[8][2][U[8][1]]
+        R[3] = R[4].FovColor
+        R[2] = R[3].Value
+        R[1].Color = R[2]
+        R[3] = R[4]
+        R[2] = R[3].AimBind
+        R[1] = R[2].Value
+        R[2] = false
+        R[3] = "MB1"
+        if (R[1] == R[3]) then
+            R[3] = U[3][2][U[3][1]]
+            R[6] = ENV.Enum
+            R[5] = R[6].UserInputType
+            R[5] = R[5].MouseButton1
+            R[4] = R[3]
+            R[3] = R[3].IsMouseButtonPressed
+            R[3] = R[3](R[4], R[5])
+            R[2] = R[3]
+        else
+            R[3] = "MB2"
+            if (R[1] == R[3]) then
+                R[3] = U[3][2][U[3][1]]
+                R[6] = ENV.Enum
+                R[5] = R[6].UserInputType
+                R[5] = R[5].MouseButton2
+                R[4] = R[3]
+                R[3] = R[3].IsMouseButtonPressed
+                R[3] = R[3](R[4], R[5])
+                R[2] = R[3]
+            else
+                R[5] = ENV.Enum
+                R[4] = R[5].KeyCode
+                R[5] = R[1]
+                if R[5] then
+                else
+                    R[5] = "F"
+                end
+                R[3] = R[4][R[5]]
+                if R[3] then
+                    R[4] = U[3][2][U[3][1]]
+                    R[6] = R[3]
+                    R[5] = R[4]
+                    R[4] = R[4].IsKeyDown
+                    R[4] = R[4](R[5], R[6])
+                    R[2] = R[4]
+                else
+                end
+            end
+        end
+        R[6] = ENV.Toggles
+        R[5] = R[6].AimbotEnabled
+        R[4] = R[5].Value
+        R[3] = (not R[4])
+        if R[3] then
+        else
+            R[3] = (not R[2])
+        end
+        if R[3] then
+        else
+            R[4] = U[6][2][U[6][1]]
+            R[3] = R[4].IsRooted
+        end
+        if R[3] then
+            R[3] = nil
+            U[1][2][U[1][1]] = R[3]
+            return table.unpack(R, 1, 0)
+        else
+            R[4] = U[1][2][U[1][1]]
+            R[3] = (not R[4])
+            if R[3] then
+                R[3] = U[5][2][U[5][1]]
+                R[3] = R[3]()
+                if R[3] then
+                    R[4] = U[4][2][U[4][1]]
+                    R[6] = R[3]
+                    R[5] = R[4]
+                    R[4] = R[4].GetPlayerFromCharacter
+                    R[4] = R[4](R[5], R[6])
+                    U[1][2][U[1][1]] = R[4]
+                else
+                end
+            else
+            end
+            R[3] = U[1][2][U[1][1]]
+            R[4] = (not R[3])
+            if R[4] then
+            else
+                R[5] = U[2][2][U[2][1]]
+                R[4] = (R[3] == R[5])
+            end
+            if R[4] then
+                R[4] = nil
+                U[1][2][U[1][1]] = R[4]
+                return table.unpack(R, 1, 0)
+            else
+                R[4] = R[3].Character
+                R[5] = (not R[4])
+                if R[5] then
+                    R[5] = nil
+                    U[1][2][U[1][1]] = R[5]
+                    return table.unpack(R, 1, 0)
+                else
+                    R[7] = "Humanoid"
+                    R[6] = R[4]
+                    R[5] = R[4].FindFirstChildOfClass
+                    R[5] = R[5](R[6], R[7])
+                    R[8] = "HumanoidRootPart"
+                    R[7] = R[4]
+                    R[6] = R[4].FindFirstChild
+                    R[6] = R[6](R[7], R[8])
+                    R[10] = ENV.Options
+                    R[9] = R[10].AimPart
+                    R[9] = R[9].Value
+                    R[8] = R[4]
+                    R[7] = R[4].FindFirstChild
+                    R[7] = R[7](R[8], R[9])
+                    R[8] = (not R[5])
+                    if R[8] then
+                    else
+                        R[9] = R[5].Health
+                        R[10] = 0
+                        R[8] = (R[9] <= R[10])
+                    end
+                    if R[8] then
+                    else
+                        R[8] = (not R[6])
+                    end
+                    if R[8] then
+                    else
+                        R[8] = (not R[7])
+                    end
+                    if R[8] then
+                        R[8] = nil
+                        U[1][2][U[1][1]] = R[8]
+                        return table.unpack(R, 1, 0)
+                    else
+                        R[12] = U[7][2][U[7][1]]
+                        R[11] = R[12].CFrame
+                        R[10] = R[11].Position
+                        R[11] = R[7].Position
+                        R[9] = (R[10] - R[11])
+                        R[8] = R[9].Magnitude
+                        R[13] = ENV.game
+                        R[15] = "Stats"
+                        R[14] = R[13]
+                        R[13] = R[13].GetService
+                        R[13] = R[13](R[14], R[15])
+                        R[12] = R[13].Network
+                        R[11] = R[12].ServerStatsItem
+                        R[10] = R[11]["Data Ping"]
+                        R[11] = R[10]
+                        R[10] = R[10].GetValue
+                        R[10] = R[10](R[11])
+                        R[11] = 1000
+                        R[9] = (R[10] / R[11])
+                        R[10] = 0
+                        R[11] = 100
+                        if (R[8] < R[11]) then
+                            R[10] = 0
+                        else
+                            R[11] = 200
+                            if (R[8] < R[11]) then
+                                R[10] = 0.1
+                            else
+                                R[11] = 300
+                                if (R[8] < R[11]) then
+                                    R[10] = 0.15
+                                else
+                                    R[10] = 0.2
+                                end
+                            end
+                        end
+                        R[13] = R[6].AssemblyLinearVelocity
+                        R[16] = 500
+                        R[15] = (R[8] / R[16])
+                        R[14] = (R[15] + R[9])
+                        R[12] = (R[13] * R[14])
+                        R[11] = (R[12] * R[10])
+                        R[13] = R[7].Position
+                        R[12] = (R[13] + R[11])
+                        R[13] = U[7][2][U[7][1]]
+                        R[15] = R[12]
+                        R[14] = R[13]
+                        R[13] = R[13].WorldToViewportPoint
+                        R[13], R[14] = R[13](R[14], R[15])
+                        R[15] = (not R[14])
+                        if R[15] then
+                            return table.unpack(R, 1, 0)
+                        else
+                            R[15] = U[3][2][U[3][1]]
+                            R[16] = R[15]
+                            R[15] = R[15].GetMouseLocation
+                            R[15] = R[15](R[16])
+                            R[18] = R[13].X
+                            R[19] = R[15].X
+                            R[17] = (R[18] - R[19])
+                            R[20] = ENV.Options
+                            R[19] = R[20].AimSmooth
+                            R[18] = R[19].Value
+                            R[16] = (R[17] * R[18])
+                            R[19] = R[13].Y
+                            R[20] = R[15].Y
+                            R[18] = (R[19] - R[20])
+                            R[21] = ENV.Options
+                            R[20] = R[21].AimSmooth
+                            R[19] = R[20].Value
+                            R[17] = (R[18] * R[19])
+                            R[18] = ENV.mousemoverel
+                            R[19] = R[16]
+                            R[20] = R[17]
+                            R[18](R[19], R[20])
+                            return table.unpack(R, 1, 0)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+P.main_2 = function(U, ENV)
+    return function(...)
+        local R = table.create(5)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = U[1][2][U[1][1]]
+        R[2] = R[3][R[1]]
+        R[3] = (not R[2])
+        if R[3] then
+            return table.unpack(R, 1, 0)
+        else
+            R[3] = R[2].name
+            if R[3] then
+                R[3] = R[2].name
+                R[4] = R[3]
+                R[3] = R[3].Remove
+                R[3](R[4])
+            else
+            end
+            R[3] = R[2].highlight
+            if R[3] then
+                R[3] = R[2].highlight
+                R[4] = R[3]
+                R[3] = R[3].Destroy
+                R[3](R[4])
+            else
+            end
+            R[3] = U[1][2][U[1][1]]
+            R[4] = nil
+            R[3][R[1]] = R[4]
+            return table.unpack(R, 1, 0)
+        end
+    end
+end
+
+P.main_3 = function(U, ENV)
+    return function(...)
+        local R = table.create(23)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[1] = nil
+                R[3] = ENV.math
+                R[2] = R[3].huge
+                R[3] = U[2][2][U[2][1]]
+                R[4] = R[3]
+                R[3] = R[3].GetMouseLocation
+                R[3] = R[3](R[4])
+                R[5] = U[3][2][U[3][1]]
+                R[4] = R[5].Character
+                R[5] = R[4]
+                if R[5] then block = 10 else block = 14 end
+            elseif block == 10 then
+                R[7] = "HumanoidRootPart"
+                R[6] = R[4]
+                R[5] = R[4].FindFirstChild
+                R[5] = R[5](R[6], R[7])
+                block = 14
+            elseif block == 14 then
+                R[6] = ENV.ipairs
+                R[7] = U[4][2][U[4][1]]
+                R[8] = R[7]
+                R[7] = R[7].GetPlayers
+                do
+                    local values = table.pack(R[7](R[8]))
+                    table.move(values, 1, values.n, 7, R)
+                    TOP = 7 + values.n - 1
+                end
+                R[6], R[7], R[8] = R[6](table.unpack(R, 7, TOP))
+                R[6], R[7], R[8] = normalizeIterator(R[6], R[7], R[8])
+                R[9], R[10] = R[6](R[7], R[8])
+                R[8] = R[9]
+                if (R[8] == nil) then block = 22 else block = 20 end
+            elseif block == 20 then
+                R[11] = U[3][2][U[3][1]]
+                if (R[10] ~= R[11]) then block = 23 else block = 38 end
+            elseif block == 22 then
+                return table.unpack(R, 1, 1)
+            elseif block == 23 then
+                R[11] = R[10].Character
+                if R[11] then block = 25 else block = 38 end
+            elseif block == 25 then
+                R[15] = ENV.Options
+                R[14] = R[15].AimPart
+                R[14] = R[14].Value
+                R[13] = R[11]
+                R[12] = R[11].FindFirstChild
+                R[12] = R[12](R[13], R[14])
+                R[15] = "Humanoid"
+                R[14] = R[11]
+                R[13] = R[11].FindFirstChildOfClass
+                R[13] = R[13](R[14], R[15])
+                R[16] = "HumanoidRootPart"
+                R[15] = R[11]
+                R[14] = R[11].FindFirstChild
+                R[14] = R[14](R[15], R[16])
+                R[15] = R[12]
+                if R[15] then block = 39 else block = 41 end
+            elseif block == 38 then
+                R[9], R[10] = R[6](R[7], R[8])
+                R[8] = R[9]
+                if (R[8] == nil) then block = 22 else block = 20 end
+            elseif block == 39 then
+                R[15] = R[13]
+                block = 41
+            elseif block == 41 then
+                if R[15] then block = 42 else block = 46 end
+            elseif block == 42 then
+                R[16] = R[13].Health
+                R[17] = 0
+                R[15] = (R[16] > R[17])
+                block = 46
+            elseif block == 46 then
+                if R[15] then block = 47 else block = 49 end
+            elseif block == 47 then
+                R[15] = R[14]
+                block = 49
+            elseif block == 49 then
+                if R[15] then block = 50 else block = 38 end
+            elseif block == 50 then
+                R[15] = true
+                if R[5] then block = 52 else block = 61 end
+            elseif block == 52 then
+                R[18] = R[14].Position
+                R[19] = R[5].Position
+                R[17] = (R[18] - R[19])
+                R[16] = R[17].Magnitude
+                R[19] = ENV.Options
+                R[18] = R[19].MaxDistance
+                R[17] = R[18].Value
+                R[15] = (R[16] <= R[17])
+                block = 61
+            elseif block == 61 then
+                if R[15] then block = 62 else block = 38 end
+            elseif block == 62 then
+                R[16] = U[1][2][U[1][1]]
+                R[18] = R[12].Position
+                R[17] = R[16]
+                R[16] = R[16].WorldToViewportPoint
+                R[16], R[17] = R[16](R[17], R[18])
+                if R[17] then block = 67 else block = 38 end
+            elseif block == 67 then
+                R[21] = ENV.Vector2
+                R[20] = R[21].new
+                R[21] = R[16].X
+                R[22] = R[16].Y
+                R[20] = R[20](R[21], R[22])
+                R[19] = (R[20] - R[3])
+                R[18] = R[19].Magnitude
+                R[22] = ENV.Options
+                R[21] = R[22].FovRadius
+                R[20] = R[21].Value
+                R[19] = (R[18] <= R[20])
+                if R[19] then block = 79 else block = 81 end
+            elseif block == 79 then
+                R[19] = (R[18] < R[2])
+                block = 81
+            elseif block == 81 then
+                if R[19] then block = 82 else block = 38 end
+            elseif block == 82 then
+                R[2] = R[18]
+                R[1] = R[11]
+                block = 38
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_4 = function(U, ENV)
+    return function(...)
+        local R = table.create(4)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[4] = "Model"
+        R[3] = R[1]
+        R[2] = R[1].IsA
+        R[2] = R[2](R[3], R[4])
+        if R[2] then
+            R[3] = ENV.task
+            R[2] = R[3].wait
+            R[3] = 0.1
+            R[2](R[3])
+            R[2] = U[1][2][U[1][1]]
+            R[3] = R[1]
+            R[2](R[3])
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_5 = function(U, ENV)
+    return function(...)
+        local R = table.create(7)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = U[2][2][U[2][1]]
+        R[2] = R[3][R[1]]
+        if R[2] then
+            return table.unpack(R, 1, 0)
+        else
+            R[3] = U[1][2][U[1][1]]
+            R[4] = R[1].Name
+            R[3] = R[3](R[4])
+            R[2] = (not R[3])
+            if R[2] then
+                return table.unpack(R, 1, 0)
+            else
+                R[3] = ENV.Drawing
+                R[2] = R[3].new
+                R[3] = "Text"
+                R[2] = R[2](R[3])
+                R[3] = true
+                R[2].Center = R[3]
+                R[2].Outline = R[3]
+                R[4] = ENV.Color3
+                R[3] = R[4].fromRGB
+                R[4] = 255
+                R[5] = 80
+                R[6] = 80
+                R[3] = R[3](R[4], R[5], R[6])
+                R[2].Color = R[3]
+                R[3] = 3
+                R[2].Font = R[3]
+                R[3] = 14
+                R[2].Size = R[3]
+                R[3] = false
+                R[2].Visible = R[3]
+                R[4] = ENV.Instance
+                R[3] = R[4].new
+                R[4] = "Highlight"
+                R[3] = R[3](R[4])
+                R[4] = "CorpseESP"
+                R[3].Name = R[4]
+                R[5] = ENV.Color3
+                R[4] = R[5].fromRGB
+                R[5] = 255
+                R[6] = 80
+                R[7] = 80
+                R[4] = R[4](R[5], R[6], R[7])
+                R[3].FillColor = R[4]
+                R[4] = 0.55
+                R[3].FillTransparency = R[4]
+                R[5] = ENV.Color3
+                R[4] = R[5].fromRGB
+                R[5] = 255
+                R[6] = 80
+                R[7] = 80
+                R[4] = R[4](R[5], R[6], R[7])
+                R[3].OutlineColor = R[4]
+                R[4] = 0
+                R[3].OutlineTransparency = R[4]
+                R[3].Adornee = R[1]
+                R[4] = ENV.game
+                R[6] = "CoreGui"
+                R[5] = R[4]
+                R[4] = R[4].GetService
+                R[4] = R[4](R[5], R[6])
+                R[3].Parent = R[4]
+                R[4] = false
+                R[3].Enabled = R[4]
+                R[4] = U[2][2][U[2][1]]
+                R[6] = {}
+                R[6].name = R[2]
+                R[6].highlight = R[3]
+                R[5] = R[6]
+                R[4][R[1]] = R[5]
+                return table.unpack(R, 1, 0)
+            end
+        end
+    end
+end
+
+P.main_6 = function(U, ENV)
+    return function(...)
+        local R = table.create(18)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[3] = ENV.Toggles
+                R[2] = R[3].VehicleESP
+                R[1] = (not R[2])
+                if R[1] then block = 5 else block = 6 end
+            elseif block == 5 then
+                if R[1] then block = 11 else block = 15 end
+            elseif block == 6 then
+                R[4] = ENV.Toggles
+                R[3] = R[4].VehicleESP
+                R[2] = R[3].Value
+                R[1] = (not R[2])
+                block = 5
+            elseif block == 11 then
+                R[1] = ENV.pairs
+                R[2] = U[2][2][U[2][1]]
+                R[1], R[2], R[3] = R[1](R[2])
+                R[1], R[2], R[3] = normalizeIterator(R[1], R[2], R[3])
+                R[4], R[5] = R[1](R[2], R[3])
+                R[3] = R[4]
+                if (R[3] == nil) then block = 28 else block = 20 end
+            elseif block == 15 then
+                R[2] = ENV.workspace
+                R[1] = R[2].CurrentCamera
+                R[3] = U[1][2][U[1][1]]
+                R[2] = R[3].Character
+                if R[2] then block = 29 else block = 35 end
+            elseif block == 20 then
+                R[6] = R[5].highlight
+                R[7] = false
+                R[6].Enabled = R[7]
+                R[6] = R[5].billboard
+                R[6].Enabled = R[7]
+                R[6] = R[5].tracer
+                R[6].Visible = R[7]
+                R[4], R[5] = R[1](R[2], R[3])
+                R[3] = R[4]
+                if (R[3] == nil) then block = 28 else block = 20 end
+            elseif block == 28 then
+                return table.unpack(R, 1, 0)
+            elseif block == 29 then
+                R[3] = U[1][2][U[1][1]]
+                R[2] = R[3].Character
+                R[4] = "HumanoidRootPart"
+                R[3] = R[2]
+                R[2] = R[2].FindFirstChild
+                R[2] = R[2](R[3], R[4])
+                block = 35
+            elseif block == 35 then
+                R[3] = (not R[2])
+                if R[3] then block = 38 else block = 39 end
+            elseif block == 38 then
+                return table.unpack(R, 1, 0)
+            elseif block == 39 then
+                R[4] = ENV.Options
+                R[3] = R[4].VehicleDistance
+                if R[3] then block = 42 else block = 46 end
+            elseif block == 42 then
+                R[5] = ENV.Options
+                R[4] = R[5].VehicleDistance
+                R[3] = R[4].Value
+                block = 46
+            elseif block == 46 then
+                if R[3] then block = 47 else block = 51 end
+            elseif block == 47 then
+                R[4] = ENV.pairs
+                R[5] = U[2][2][U[2][1]]
+                R[4], R[5], R[6] = R[4](R[5])
+                R[4], R[5], R[6] = normalizeIterator(R[4], R[5], R[6])
+                R[7], R[8] = R[4](R[5], R[6])
+                R[6] = R[7]
+                if (R[6] == nil) then block = 56 else block = 53 end
+            elseif block == 51 then
+                R[3] = 10000
+                block = 47
+            elseif block == 53 then
+                R[10] = R[8].base
+                R[9] = (not R[10])
+                if R[9] then block = 57 else block = 58 end
+            elseif block == 56 then
+                return table.unpack(R, 1, 0)
+            elseif block == 57 then
+                if R[9] then block = 74 else block = 64 end
+            elseif block == 58 then
+                R[10] = R[8].base
+                R[12] = ENV.workspace
+                R[11] = R[10]
+                R[10] = R[10].IsDescendantOf
+                R[10] = R[10](R[11], R[12])
+                R[9] = (not R[10])
+                block = 57
+            elseif block == 64 then
+                R[11] = R[2].Position
+                R[13] = R[8].base
+                R[12] = R[13].Position
+                R[10] = (R[11] - R[12])
+                R[9] = R[10].Magnitude
+                R[12] = R[8].base
+                R[12] = R[12].Position
+                R[11] = R[1]
+                R[10] = R[1].WorldToViewportPoint
+                R[10], R[11] = R[10](R[11], R[12])
+                if (R[9] <= R[3]) then block = 75 else block = 94 end
+            elseif block == 74 then
+                R[7], R[8] = R[4](R[5], R[6])
+                R[6] = R[7]
+                if (R[6] == nil) then block = 56 else block = 53 end
+            elseif block == 75 then
+                R[12] = R[8].label
+                R[14] = ENV.string
+                R[13] = R[14].format
+                R[14] = "%s\n%d studs"
+                R[15] = R[7].Name
+                R[17] = ENV.math
+                R[16] = R[17].floor
+                R[17] = R[9]
+                do
+                    local values = table.pack(R[16](R[17]))
+                    table.move(values, 1, values.n, 16, R)
+                    TOP = 16 + values.n - 1
+                end
+                R[13] = R[13](table.unpack(R, 14, TOP))
+                R[12].Text = R[13]
+                R[12] = R[8].highlight
+                R[13] = true
+                R[12].Enabled = R[13]
+                R[12] = R[8].billboard
+                R[12].Enabled = R[13]
+                R[13] = ENV.Toggles
+                R[12] = R[13].VehicleTracers
+                if R[12] then block = 102 else block = 106 end
+            elseif block == 94 then
+                R[12] = R[8].highlight
+                R[13] = false
+                R[12].Enabled = R[13]
+                R[12] = R[8].billboard
+                R[12].Enabled = R[13]
+                R[12] = R[8].tracer
+                R[12].Visible = R[13]
+                block = 74
+            elseif block == 102 then
+                R[14] = ENV.Toggles
+                R[13] = R[14].VehicleTracers
+                R[12] = R[13].Value
+                block = 106
+            elseif block == 106 then
+                if R[12] then block = 107 else block = 109 end
+            elseif block == 107 then
+                R[12] = R[11]
+                block = 109
+            elseif block == 109 then
+                if R[12] then block = 110 else block = 134 end
+            elseif block == 110 then
+                R[12] = R[8].tracer
+                R[14] = ENV.Vector2
+                R[13] = R[14].new
+                R[16] = R[1].ViewportSize
+                R[15] = R[16].X
+                R[16] = 2
+                R[14] = (R[15] / R[16])
+                R[16] = R[1].ViewportSize
+                R[15] = R[16].Y
+                R[16] = 2
+                R[15] = (R[15] / R[16])
+                R[13] = R[13](R[14], R[15])
+                R[12].From = R[13]
+                R[12] = R[8].tracer
+                R[14] = ENV.Vector2
+                R[13] = R[14].new
+                R[14] = R[10].X
+                R[15] = R[10].Y
+                R[13] = R[13](R[14], R[15])
+                R[12].To = R[13]
+                R[12] = R[8].tracer
+                R[13] = true
+                R[12].Visible = R[13]
+                block = 74
+            elseif block == 134 then
+                R[12] = R[8].tracer
+                R[13] = false
+                R[12].Visible = R[13]
+                block = 74
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_7 = function(U, ENV)
+    return function(...)
+        local R = table.create(13)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[2] = U[2][2][U[2][1]]
+                R[1] = R[2].Character
+                R[2] = (not R[1])
+                if R[2] then block = 5 else block = 6 end
+            elseif block == 5 then
+                return table.unpack(R, 1, 0)
+            elseif block == 6 then
+                R[4] = ENV.Toggles
+                R[3] = R[4].FFToggle
+                R[2] = R[3].Value
+                R[5] = ENV.Options
+                R[4] = R[5].FFColor
+                R[3] = R[4].Value
+                if R[2] then block = 13 else block = 18 end
+            elseif block == 13 then
+                R[4] = ENV.ipairs
+                R[6] = R[1]
+                R[5] = R[1].GetDescendants
+                do
+                    local values = table.pack(R[5](R[6]))
+                    table.move(values, 1, values.n, 5, R)
+                    TOP = 5 + values.n - 1
+                end
+                R[4], R[5], R[6] = R[4](table.unpack(R, 5, TOP))
+                R[4], R[5], R[6] = normalizeIterator(R[4], R[5], R[6])
+                R[7], R[8] = R[4](R[5], R[6])
+                R[6] = R[7]
+                if (R[6] == nil) then block = 37 else block = 22 end
+            elseif block == 18 then
+                R[4] = ENV.pairs
+                R[5] = U[1][2][U[1][1]]
+                R[4], R[5], R[6] = R[4](R[5])
+                R[4], R[5], R[6] = normalizeIterator(R[4], R[5], R[6])
+                R[7], R[8] = R[4](R[5], R[6])
+                R[6] = R[7]
+                if (R[6] == nil) then block = 28 else block = 26 end
+            elseif block == 22 then
+                R[11] = "BasePart"
+                R[10] = R[8]
+                R[9] = R[8].IsA
+                R[9] = R[9](R[10], R[11])
+                if R[9] then block = 33 else block = 55 end
+            elseif block == 26 then
+                R[9] = R[7]
+                if R[9] then block = 38 else block = 40 end
+            elseif block == 28 then
+                R[5] = ENV.table
+                R[4] = R[5].clear
+                R[5] = U[1][2][U[1][1]]
+                R[4](R[5])
+                block = 37
+            elseif block == 33 then
+                R[11] = U[1][2][U[1][1]]
+                R[10] = R[11][R[8]]
+                R[9] = (not R[10])
+                if R[9] then block = 41 else block = 49 end
+            elseif block == 37 then
+                return table.unpack(R, 1, 0)
+            elseif block == 38 then
+                R[9] = R[7].Parent
+                block = 40
+            elseif block == 40 then
+                if R[9] then block = 56 else block = 61 end
+            elseif block == 41 then
+                R[9] = U[1][2][U[1][1]]
+                R[11] = {}
+                R[12] = R[8].Material
+                R[11].Material = R[12]
+                R[12] = R[8].Color
+                R[11].Color = R[12]
+                R[10] = R[11]
+                R[9][R[8]] = R[10]
+                block = 49
+            elseif block == 49 then
+                R[11] = ENV.Enum
+                R[10] = R[11].Material
+                R[9] = R[10].ForceField
+                R[8].Material = R[9]
+                R[8].Color = R[3]
+                block = 55
+            elseif block == 55 then
+                R[7], R[8] = R[4](R[5], R[6])
+                R[6] = R[7]
+                if (R[6] == nil) then block = 37 else block = 22 end
+            elseif block == 56 then
+                R[9] = R[8].Material
+                R[7].Material = R[9]
+                R[9] = R[8].Color
+                R[7].Color = R[9]
+                block = 61
+            elseif block == 61 then
+                R[7], R[8] = R[4](R[5], R[6])
+                R[6] = R[7]
+                if (R[6] == nil) then block = 28 else block = 26 end
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_8 = function(U, ENV)
+    return function(...)
+        local R = table.create(4)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[2] = U[1][2][U[1][1]]
+        R[4] = R[1]
+        R[3] = R[2]
+        R[2] = R[2].GetPlayerFromCharacter
+        R[2] = R[2](R[3], R[4])
+        if R[2] then
+        else
+            R[2] = U[1][2][U[1][1]]
+            R[4] = R[1].Name
+            R[3] = R[2]
+            R[2] = R[2].FindFirstChild
+            R[2] = R[2](R[3], R[4])
+        end
+        R[3] = R[2]
+        if R[3] then
+            R[3] = R[2].Name
+        else
+        end
+        if R[3] then
+        else
+            R[3] = "Player"
+        end
+        return table.unpack(R, 3, 3)
+    end
+end
+
+P.main_9 = function(U, ENV)
+    return function(...)
+        local R = table.create(2)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[1] = U[1][2][U[1][1]]
+        R[2] = R[1]
+        R[1] = R[1].Unload
+        R[1](R[2])
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_10 = function(U, ENV)
+    return function(...)
+        local R = table.create(7)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = ENV.Toggles
+        R[2] = R[3].InfJump
+        R[1] = R[2].Value
+        if R[1] then
+            R[1] = U[2][2][U[2][1]]
+        else
+        end
+        if R[1] then
+            R[2] = U[1][2][U[1][1]]
+            R[1] = R[2].Character
+            if R[1] then
+                R[2] = U[1][2][U[1][1]]
+                R[1] = R[2].Character
+                R[3] = "HumanoidRootPart"
+                R[2] = R[1]
+                R[1] = R[1].FindFirstChild
+                R[1] = R[1](R[2], R[3])
+            else
+            end
+            if R[1] then
+                R[3] = ENV.Vector3
+                R[2] = R[3].new
+                R[4] = R[1].AssemblyLinearVelocity
+                R[3] = R[4].X
+                R[6] = ENV.Options
+                R[5] = R[6].JumpPower
+                R[4] = R[5].Value
+                R[5] = R[1].AssemblyLinearVelocity
+                R[5] = R[5].Z
+                R[2] = R[2](R[3], R[4], R[5])
+                R[1].AssemblyLinearVelocity = R[2]
+            else
+            end
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_11 = function(U, ENV)
+    return function(...)
+        local R = table.create(4)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        U[1][2][U[1][1]] = R[1]
+        R[2] = (not R[1])
+        if R[2] then
+            R[3] = ENV.workspace
+            R[2] = R[3].CurrentCamera
+            R[3] = 70
+            R[2].FieldOfView = R[3]
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_12 = function(U, ENV)
+    return function(...)
+        local R = table.create(3)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[1] = U[2][2][U[2][1]]
+        if R[1] then
+            R[2] = ENV.workspace
+            R[1] = R[2].CurrentCamera
+            R[2] = U[1][2][U[1][1]]
+            R[1].FieldOfView = R[2]
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_13 = function(U, ENV)
+    return function(...)
+        local R = table.create(11)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[2] = ENV.workspace
+                R[4] = "Zombies"
+                R[3] = R[2]
+                R[2] = R[2].FindFirstChild
+                R[2] = R[2](R[3], R[4])
+                R[3] = (not R[2])
+                if R[3] then block = 7 else block = 8 end
+            elseif block == 7 then
+                return table.unpack(R, 1, 0)
+            elseif block == 8 then
+                R[3] = ENV.pairs
+                R[5] = R[2]
+                R[4] = R[2].GetChildren
+                do
+                    local values = table.pack(R[4](R[5]))
+                    table.move(values, 1, values.n, 4, R)
+                    TOP = 4 + values.n - 1
+                end
+                R[3], R[4], R[5] = R[3](table.unpack(R, 4, TOP))
+                R[3], R[4], R[5] = normalizeIterator(R[3], R[4], R[5])
+                R[6], R[7] = R[3](R[4], R[5])
+                R[5] = R[6]
+                if (R[5] == nil) then block = 17 else block = 13 end
+            elseif block == 13 then
+                R[10] = "HumanoidRootPart"
+                R[9] = R[7]
+                R[8] = R[7].FindFirstChild
+                R[8] = R[8](R[9], R[10])
+                if R[8] then block = 18 else block = 25 end
+            elseif block == 17 then
+                return table.unpack(R, 1, 0)
+            elseif block == 18 then
+                R[11] = "Moan"
+                R[10] = R[8]
+                R[9] = R[8].FindFirstChild
+                R[9] = R[9](R[10], R[11])
+                if R[9] then block = 22 else block = 25 end
+            elseif block == 22 then
+                R[10] = (not R[1])
+                R[9].Playing = R[10]
+                block = 25
+            elseif block == 25 then
+                R[6], R[7] = R[3](R[4], R[5])
+                R[5] = R[6]
+                if (R[5] == nil) then block = 17 else block = 13 end
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_14 = function(U, ENV)
+    return function(...)
+        local R = table.create(4)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[2] = U[2][2][U[2][1]]
+        if (R[1] == R[2]) then
+            return table.unpack(R, 1, 0)
+        else
+            R[2] = R[1].Character
+            if R[2] then
+                R[3] = ENV.task
+                R[2] = R[3].spawn
+                R[3] = U[1][2][U[1][1]]
+                R[4] = R[1].Character
+                R[2](R[3], R[4])
+            else
+            end
+            R[2] = R[1].CharacterAdded
+            R[4] = P.main_14_1({U[1]}, ENV)
+            R[3] = R[2]
+            R[2] = R[2].Connect
+            R[2](R[3], R[4])
+            return table.unpack(R, 1, 0)
+        end
+    end
+end
+
+P.main_14_1 = function(U, ENV)
+    return function(...)
+        local R = table.create(4)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = ENV.task
+        R[2] = R[3].wait
+        R[2]()
+        R[2] = R[3].spawn
+        R[3] = U[1][2][U[1][1]]
+        R[4] = R[1]
+        R[2](R[3], R[4])
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_15 = function(U, ENV)
+    return function(...)
+        local R = table.create(11)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[2] = U[2][2][U[2][1]]
+        R[3] = 1
+        R[1] = (R[2] + R[3])
+        U[2][2][U[2][1]] = R[1]
+        R[1] = ENV.tick
+        R[1] = R[1]()
+        R[3] = U[3][2][U[3][1]]
+        R[2] = (R[1] - R[3])
+        R[3] = 0.5
+        if (R[2] >= R[3]) then
+            R[3] = ENV.Toggles
+            R[2] = R[3].ShowWatermark
+            if R[2] then
+                R[4] = ENV.Toggles
+                R[3] = R[4].ShowWatermark
+                R[2] = R[3].Value
+            else
+            end
+            if R[2] then
+                R[3] = ENV.math
+                R[2] = R[3].floor
+                R[3] = U[2][2][U[2][1]]
+                R[5] = U[3][2][U[3][1]]
+                R[4] = (R[1] - R[5])
+                R[3] = (R[3] / R[4])
+                R[2] = R[2](R[3])
+                R[3] = ENV.tostring
+                R[4] = R[2]
+                R[3] = R[3](R[4])
+                U[4][2][U[4][1]] = R[3]
+                R[4] = ENV.math
+                R[3] = R[4].floor
+                R[7] = ENV.game
+                R[9] = "Stats"
+                R[8] = R[7]
+                R[7] = R[7].GetService
+                R[7] = R[7](R[8], R[9])
+                R[6] = R[7].Network
+                R[5] = R[6].ServerStatsItem
+                R[4] = R[5]["Data Ping"]
+                R[5] = R[4]
+                R[4] = R[4].GetValue
+                do
+                    local values = table.pack(R[4](R[5]))
+                    table.move(values, 1, values.n, 4, R)
+                    TOP = 4 + values.n - 1
+                end
+                R[3] = R[3](table.unpack(R, 4, TOP))
+                R[5] = ENV.os
+                R[4] = R[5].date
+                R[5] = "%X"
+                R[4] = R[4](R[5])
+                R[5] = U[1][2][U[1][1]]
+                R[8] = ENV.string
+                R[7] = R[8].format
+                R[8] = "dolarovhub | %s fps | %s ms | %s"
+                R[9] = U[4][2][U[4][1]]
+                R[10] = ENV.tostring
+                R[11] = R[3]
+                R[10] = R[10](R[11])
+                R[11] = R[4]
+                do
+                    local values = table.pack(R[7](R[8], R[9], R[10], R[11]))
+                    table.move(values, 1, values.n, 7, R)
+                    TOP = 7 + values.n - 1
+                end
+                R[6] = R[5]
+                R[5] = R[5].SetWatermark
+                R[5](table.unpack(R, 6, TOP))
+            else
+            end
+            U[3][2][U[3][1]] = R[1]
+            R[2] = 0
+            U[2][2][U[2][1]] = R[2]
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_16 = function(U, ENV)
+    return function(...)
+        local R = table.create(5)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = ENV.task
+        R[2] = R[3].wait
+        R[3] = 0.15
+        R[2](R[3])
+        R[4] = "Folder"
+        R[3] = R[1]
+        R[2] = R[1].IsA
+        R[2] = R[2](R[3], R[4])
+        if R[2] then
+            R[2] = R[1].Name
+            R[4] = "SeahawkCrashsite"
+            R[3] = R[2]
+            R[2] = R[2].match
+            R[2] = R[2](R[3], R[4])
+        else
+        end
+        if R[2] then
+            R[3] = R[1].Name
+            R[5] = "Rogue"
+            R[4] = R[3]
+            R[3] = R[3].match
+            R[3] = R[3](R[4], R[5])
+            R[2] = (not R[3])
+        else
+        end
+        if R[2] then
+            R[2] = U[1][2][U[1][1]]
+            R[3] = R[1]
+            R[2](R[3])
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_17 = function(U, ENV)
+    return function(...)
+        local R = table.create(6)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[2] = R[1].KeyCode
+        R[5] = ENV.Enum
+        R[4] = R[5].KeyCode
+        R[3] = R[4].Space
+        if (R[2] == R[3]) then
+            R[2] = false
+            U[1][2][U[1][1]] = R[2]
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_18 = function(U, ENV)
+    return function(...)
+        local R = table.create(9)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[1] = U[2][2][U[2][1]]
+        R[2] = {}
+        R[3] = "http://127.0.0.1:6463/rpc?v=1"
+        R[2].Url = R[3]
+        R[3] = "POST"
+        R[2].Method = R[3]
+        R[4] = {}
+        R[5] = "application/json"
+        R[4]["Content-Type"] = R[5]
+        R[5] = "https://discord.com"
+        R[4].Origin = R[5]
+        R[3] = R[4]
+        R[2].Headers = R[3]
+        R[3] = U[1][2][U[1][1]]
+        R[5] = {}
+        R[6] = "INVITE_BROWSER"
+        R[5].cmd = R[6]
+        R[6] = U[1][2][U[1][1]]
+        R[8] = false
+        R[7] = R[6]
+        R[6] = R[6].GenerateGUID
+        R[6] = R[6](R[7], R[8])
+        R[5].nonce = R[6]
+        R[7] = {}
+        R[8] = "wGWuM3Qz3J"
+        R[7].code = R[8]
+        R[6] = R[7]
+        R[5].args = R[6]
+        R[4] = R[3]
+        R[3] = R[3].JSONEncode
+        R[3] = R[3](R[4], R[5])
+        R[2].Body = R[3]
+        do
+            local values = table.pack(R[1](R[2]))
+            table.move(values, 1, values.n, 1, R)
+            TOP = 1 + values.n - 1
+        end
+        return table.unpack(R, 1, ((1 + ((TOP - 1) + 1)) - 1))
+    end
+end
+
+P.main_19 = function(U, ENV)
+    return function(...)
+        local R = table.create(10)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = U[1][2][U[1][1]]
+        R[2] = R[3][R[1]]
+        if R[2] then
+            return table.unpack(R, 1, 0)
+        else
+            R[4] = "Base"
+            R[3] = R[1]
+            R[2] = R[1].FindFirstChild
+            R[2] = R[2](R[3], R[4])
+            R[3] = (not R[2])
+            if R[3] then
+            else
+                R[6] = "BasePart"
+                R[5] = R[2]
+                R[4] = R[2].IsA
+                R[4] = R[4](R[5], R[6])
+                R[3] = (not R[4])
+            end
+            if R[3] then
+                return table.unpack(R, 1, 0)
+            else
+                R[4] = ENV.Instance
+                R[3] = R[4].new
+                R[4] = "Highlight"
+                R[3] = R[3](R[4])
+                R[3].Adornee = R[2]
+                R[5] = ENV.Color3
+                R[4] = R[5].fromRGB
+                R[5] = 0
+                R[6] = 200
+                R[7] = 255
+                R[4] = R[4](R[5], R[6], R[7])
+                R[3].FillColor = R[4]
+                R[4] = 0.65
+                R[3].FillTransparency = R[4]
+                R[5] = ENV.Color3
+                R[4] = R[5].fromRGB
+                R[5] = 255
+                R[6] = 80
+                R[7] = 80
+                R[4] = R[4](R[5], R[6], R[7])
+                R[3].OutlineColor = R[4]
+                R[4] = 0.2
+                R[3].OutlineTransparency = R[4]
+                R[4] = ENV.game
+                R[6] = "CoreGui"
+                R[5] = R[4]
+                R[4] = R[4].GetService
+                R[4] = R[4](R[5], R[6])
+                R[3].Parent = R[4]
+                R[5] = ENV.Instance
+                R[4] = R[5].new
+                R[5] = "BillboardGui"
+                R[4] = R[4](R[5])
+                R[4].Adornee = R[2]
+                R[6] = ENV.UDim2
+                R[5] = R[6].new
+                R[6] = 0
+                R[7] = 140
+                R[8] = 0
+                R[9] = 35
+                R[5] = R[5](R[6], R[7], R[8], R[9])
+                R[4].Size = R[5]
+                R[6] = ENV.Vector3
+                R[5] = R[6].new
+                R[6] = 0
+                R[7] = 3.5
+                R[8] = 0
+                R[5] = R[5](R[6], R[7], R[8])
+                R[4].StudsOffset = R[5]
+                R[5] = true
+                R[4].AlwaysOnTop = R[5]
+                R[6] = ENV.math
+                R[5] = R[6].huge
+                R[4].MaxDistance = R[5]
+                R[5] = ENV.game
+                R[7] = "CoreGui"
+                R[6] = R[5]
+                R[5] = R[5].GetService
+                R[5] = R[5](R[6], R[7])
+                R[4].Parent = R[5]
+                R[6] = ENV.Instance
+                R[5] = R[6].new
+                R[6] = "TextLabel"
+                R[5] = R[5](R[6])
+                R[7] = ENV.UDim2
+                R[6] = R[7].new
+                R[7] = 1
+                R[8] = 0
+                R[9] = 1
+                R[10] = 0
+                R[6] = R[6](R[7], R[8], R[9], R[10])
+                R[5].Size = R[6]
+                R[6] = 1
+                R[5].BackgroundTransparency = R[6]
+                R[7] = ENV.Color3
+                R[6] = R[7].fromRGB
+                R[7] = 0
+                R[8] = 220
+                R[9] = 255
+                R[6] = R[6](R[7], R[8], R[9])
+                R[5].TextColor3 = R[6]
+                R[6] = 0.5
+                R[5].TextStrokeTransparency = R[6]
+                R[8] = ENV.Enum
+                R[7] = R[8].Font
+                R[6] = R[7].GothamBold
+                R[5].Font = R[6]
+                R[6] = true
+                R[5].TextScaled = R[6]
+                R[5].Parent = R[4]
+                R[7] = ENV.Drawing
+                R[6] = R[7].new
+                R[7] = "Line"
+                R[6] = R[6](R[7])
+                R[7] = 1.2
+                R[6].Thickness = R[7]
+                R[8] = ENV.Color3
+                R[7] = R[8].fromRGB
+                R[8] = 0
+                R[9] = 200
+                R[10] = 255
+                R[7] = R[7](R[8], R[9], R[10])
+                R[6].Color = R[7]
+                R[7] = false
+                R[6].Visible = R[7]
+                R[7] = U[1][2][U[1][1]]
+                R[9] = {}
+                R[9].highlight = R[3]
+                R[9].billboard = R[4]
+                R[9].label = R[5]
+                R[9].tracer = R[6]
+                R[9].base = R[2]
+                R[8] = R[9]
+                R[7][R[1]] = R[8]
+                return table.unpack(R, 1, 0)
+            end
+        end
+    end
+end
+
+P.main_20 = function(U, ENV)
+    return function(...)
+        local R = table.create(2)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        U[1][2][U[1][1]] = R[1]
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_21 = function(U, ENV)
+    return function(...)
+        local R = table.create(17)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[3] = ENV.Toggles
+                R[2] = R[3].HeliESP
+                R[1] = (not R[2])
+                if R[1] then block = 5 else block = 6 end
+            elseif block == 5 then
+                if R[1] then block = 11 else block = 15 end
+            elseif block == 6 then
+                R[4] = ENV.Toggles
+                R[3] = R[4].HeliESP
+                R[2] = R[3].Value
+                R[1] = (not R[2])
+                block = 5
+            elseif block == 11 then
+                R[1] = ENV.pairs
+                R[2] = U[2][2][U[2][1]]
+                R[1], R[2], R[3] = R[1](R[2])
+                R[1], R[2], R[3] = normalizeIterator(R[1], R[2], R[3])
+                R[4], R[5] = R[1](R[2], R[3])
+                R[3] = R[4]
+                if (R[3] == nil) then block = 28 else block = 20 end
+            elseif block == 15 then
+                R[2] = ENV.workspace
+                R[1] = R[2].CurrentCamera
+                R[3] = U[1][2][U[1][1]]
+                R[2] = R[3].Character
+                if R[2] then block = 29 else block = 35 end
+            elseif block == 20 then
+                R[6] = R[5].highlight
+                R[7] = false
+                R[6].Enabled = R[7]
+                R[6] = R[5].billboard
+                R[6].Enabled = R[7]
+                R[6] = R[5].tracer
+                R[6].Visible = R[7]
+                R[4], R[5] = R[1](R[2], R[3])
+                R[3] = R[4]
+                if (R[3] == nil) then block = 28 else block = 20 end
+            elseif block == 28 then
+                return table.unpack(R, 1, 0)
+            elseif block == 29 then
+                R[3] = U[1][2][U[1][1]]
+                R[2] = R[3].Character
+                R[4] = "HumanoidRootPart"
+                R[3] = R[2]
+                R[2] = R[2].FindFirstChild
+                R[2] = R[2](R[3], R[4])
+                block = 35
+            elseif block == 35 then
+                R[3] = (not R[2])
+                if R[3] then block = 38 else block = 39 end
+            elseif block == 38 then
+                return table.unpack(R, 1, 0)
+            elseif block == 39 then
+                R[3] = ENV.pairs
+                R[4] = U[2][2][U[2][1]]
+                R[3], R[4], R[5] = R[3](R[4])
+                R[3], R[4], R[5] = normalizeIterator(R[3], R[4], R[5])
+                R[6], R[7] = R[3](R[4], R[5])
+                R[5] = R[6]
+                if (R[5] == nil) then block = 46 else block = 43 end
+            elseif block == 43 then
+                R[9] = R[7].part
+                R[8] = (not R[9])
+                if R[8] then block = 47 else block = 48 end
+            elseif block == 46 then
+                return table.unpack(R, 1, 0)
+            elseif block == 47 then
+                if R[8] then block = 82 else block = 54 end
+            elseif block == 48 then
+                R[9] = R[7].part
+                R[11] = ENV.workspace
+                R[10] = R[9]
+                R[9] = R[9].IsDescendantOf
+                R[9] = R[9](R[10], R[11])
+                R[8] = (not R[9])
+                block = 47
+            elseif block == 54 then
+                R[10] = R[2].Position
+                R[12] = R[7].part
+                R[11] = R[12].Position
+                R[9] = (R[10] - R[11])
+                R[8] = R[9].Magnitude
+                R[11] = R[7].part
+                R[11] = R[11].Position
+                R[10] = R[1]
+                R[9] = R[1].WorldToViewportPoint
+                R[9], R[10] = R[9](R[10], R[11])
+                R[11] = R[7].label
+                R[13] = ENV.string
+                R[12] = R[13].format
+                R[13] = "%s\n%d studs"
+                R[14] = R[6].Name
+                R[16] = ENV.math
+                R[15] = R[16].floor
+                R[16] = R[8]
+                do
+                    local values = table.pack(R[15](R[16]))
+                    table.move(values, 1, values.n, 15, R)
+                    TOP = 15 + values.n - 1
+                end
+                R[12] = R[12](table.unpack(R, 13, TOP))
+                R[11].Text = R[12]
+                R[11] = R[7].highlight
+                R[12] = true
+                R[11].Enabled = R[12]
+                R[11] = R[7].billboard
+                R[11].Enabled = R[12]
+                R[12] = ENV.Toggles
+                R[11] = R[12].HeliTracers
+                if R[11] then block = 83 else block = 87 end
+            elseif block == 82 then
+                R[6], R[7] = R[3](R[4], R[5])
+                R[5] = R[6]
+                if (R[5] == nil) then block = 46 else block = 43 end
+            elseif block == 83 then
+                R[13] = ENV.Toggles
+                R[12] = R[13].HeliTracers
+                R[11] = R[12].Value
+                block = 87
+            elseif block == 87 then
+                if R[11] then block = 88 else block = 90 end
+            elseif block == 88 then
+                R[11] = R[10]
+                block = 90
+            elseif block == 90 then
+                if R[11] then block = 91 else block = 115 end
+            elseif block == 91 then
+                R[11] = R[7].tracer
+                R[13] = ENV.Vector2
+                R[12] = R[13].new
+                R[15] = R[1].ViewportSize
+                R[14] = R[15].X
+                R[15] = 2
+                R[13] = (R[14] / R[15])
+                R[15] = R[1].ViewportSize
+                R[14] = R[15].Y
+                R[15] = 2
+                R[14] = (R[14] / R[15])
+                R[12] = R[12](R[13], R[14])
+                R[11].From = R[12]
+                R[11] = R[7].tracer
+                R[13] = ENV.Vector2
+                R[12] = R[13].new
+                R[13] = R[9].X
+                R[14] = R[9].Y
+                R[12] = R[12](R[13], R[14])
+                R[11].To = R[12]
+                R[11] = R[7].tracer
+                R[12] = true
+                R[11].Visible = R[12]
+                block = 82
+            elseif block == 115 then
+                R[11] = R[7].tracer
+                R[12] = false
+                R[11].Visible = R[12]
+                block = 82
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_22 = function(U, ENV)
+    return function(...)
+        local R = table.create(9)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[4] = "Zombie"
+                R[3] = R[1]
+                R[2] = R[1].find
+                R[2] = R[2](R[3], R[4])
+                if R[2] then block = 5 else block = 6 end
+            elseif block == 5 then
+                if R[2] then block = 11 else block = 12 end
+            elseif block == 6 then
+                R[4] = U[2][2][U[2][1]]
+                R[4] = R[4].Name
+                R[3] = R[1]
+                R[2] = R[1].find
+                R[2] = R[2](R[3], R[4])
+                block = 5
+            elseif block == 11 then
+                R[2] = false
+                return table.unpack(R, 2, 2)
+            elseif block == 12 then
+                R[2] = ENV.ipairs
+                R[3] = U[1][2][U[1][1]]
+                R[4] = R[3]
+                R[3] = R[3].GetPlayers
+                do
+                    local values = table.pack(R[3](R[4]))
+                    table.move(values, 1, values.n, 3, R)
+                    TOP = 3 + values.n - 1
+                end
+                R[2], R[3], R[4] = R[2](table.unpack(R, 3, TOP))
+                R[2], R[3], R[4] = normalizeIterator(R[2], R[3], R[4])
+                R[5], R[6] = R[2](R[3], R[4])
+                R[4] = R[5]
+                if (R[4] == nil) then block = 21 else block = 18 end
+            elseif block == 18 then
+                R[8] = R[6].Name
+                R[7] = (R[1] == R[8])
+                if R[7] then block = 22 else block = 23 end
+            elseif block == 21 then
+                R[2] = false
+                return table.unpack(R, 2, 2)
+            elseif block == 22 then
+                if R[7] then block = 27 else block = 28 end
+            elseif block == 23 then
+                R[9] = R[6].Name
+                R[8] = R[1]
+                R[7] = R[1].find
+                R[7] = R[7](R[8], R[9])
+                block = 22
+            elseif block == 27 then
+                R[7] = true
+                return table.unpack(R, 7, 7)
+            elseif block == 28 then
+                R[5], R[6] = R[2](R[3], R[4])
+                R[4] = R[5]
+                if (R[4] == nil) then block = 21 else block = 18 end
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_23 = function(U, ENV)
+    return function(...)
+        local R = table.create(8)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 2, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = (not R[2])
+        if R[3] then
+            R[4] = R[1].KeyCode
+            R[7] = ENV.Enum
+            R[6] = R[7].KeyCode
+            R[5] = R[6].Space
+            R[3] = (R[4] == R[5])
+        else
+        end
+        if R[3] then
+            R[3] = true
+            U[1][2][U[1][1]] = R[3]
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_24 = function(U, ENV)
+    return function(...)
+        local R = table.create(14)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[2] = U[7][2][U[7][1]]
+        R[4] = R[1]
+        R[3] = R[2]
+        R[2] = R[2].GetPlayerFromCharacter
+        R[2] = R[2](R[3], R[4])
+        R[3] = (not R[2])
+        if R[3] then
+        else
+            R[4] = U[3][2][U[3][1]]
+            R[3] = (R[2] == R[4])
+        end
+        if R[3] then
+            closeUpvalues(1)
+            return table.unpack(R, 1, 0)
+        else
+            R[4] = U[6][2][U[6][1]]
+            R[3] = R[4][R[1]]
+            if R[3] then
+                closeUpvalues(1)
+                return table.unpack(R, 1, 0)
+            else
+                R[4] = ENV.Instance
+                R[3] = R[4].new
+                R[4] = "ScreenGui"
+                R[3] = R[3](R[4])
+                R[4] = false
+                R[3].ResetOnSpawn = R[4]
+                R[4] = true
+                R[3].IgnoreGuiInset = R[4]
+                R[4] = U[1][2][U[1][1]]
+                R[3].Parent = R[4]
+                R[5] = ENV.Instance
+                R[4] = R[5].new
+                R[5] = "Frame"
+                R[4] = R[4](R[5])
+                R[5] = 1
+                R[4].BackgroundTransparency = R[5]
+                R[5] = 0
+                R[4].BorderSizePixel = R[5]
+                R[5] = false
+                R[4].Visible = R[5]
+                R[4].Parent = R[3]
+                R[6] = ENV.Instance
+                R[5] = R[6].new
+                R[6] = "UIStroke"
+                R[5] = R[5](R[6])
+                R[6] = 1.5
+                R[5].Thickness = R[6]
+                R[8] = ENV.Enum
+                R[7] = R[8].ApplyStrokeMode
+                R[6] = R[7].Border
+                R[5].ApplyStrokeMode = R[6]
+                R[8] = ENV.Options
+                R[7] = R[8].BoxCol
+                R[6] = R[7].Value
+                R[5].Color = R[6]
+                R[5].Parent = R[4]
+                R[7] = ENV.Instance
+                R[6] = R[7].new
+                R[7] = "Frame"
+                R[6] = R[6](R[7])
+                R[7] = 0.6
+                R[6].BackgroundTransparency = R[7]
+                R[7] = 0
+                R[6].BorderSizePixel = R[7]
+                R[7] = false
+                R[6].Visible = R[7]
+                R[6].Parent = R[3]
+                R[8] = ENV.Instance
+                R[7] = R[8].new
+                R[8] = "TextLabel"
+                R[7] = R[7](R[8])
+                R[8] = 1
+                R[7].BackgroundTransparency = R[8]
+                R[8] = 0
+                R[7].TextStrokeTransparency = R[8]
+                R[9] = ENV.Color3
+                R[8] = R[9].new
+                R[9] = 0
+                R[10] = 0
+                R[11] = 0
+                R[8] = R[8](R[9], R[10], R[11])
+                R[7].TextStrokeColor3 = R[8]
+                R[10] = ENV.Enum
+                R[9] = R[10].Font
+                R[8] = R[9].SourceSansBold
+                R[7].Font = R[8]
+                R[8] = 14
+                R[7].TextSize = R[8]
+                R[9] = R[10].TextXAlignment
+                R[8] = R[9].Center
+                R[7].TextXAlignment = R[8]
+                R[10] = ENV.Options
+                R[9] = R[10].NameCol
+                R[8] = R[9].Value
+                R[7].TextColor3 = R[8]
+                R[9] = ENV.UDim2
+                R[8] = R[9].new
+                R[9] = 0
+                R[10] = 200
+                R[11] = 0
+                R[12] = 20
+                R[8] = R[8](R[9], R[10], R[11], R[12])
+                R[7].Size = R[8]
+                R[8] = false
+                R[7].Visible = R[8]
+                R[7].Parent = R[3]
+                R[9] = ENV.Instance
+                R[8] = R[9].new
+                R[9] = "TextLabel"
+                R[8] = R[8](R[9])
+                R[9] = 1
+                R[8].BackgroundTransparency = R[9]
+                R[9] = 0
+                R[8].TextStrokeTransparency = R[9]
+                R[10] = ENV.Color3
+                R[9] = R[10].new
+                R[10] = 0
+                R[11] = 0
+                R[12] = 0
+                R[9] = R[9](R[10], R[11], R[12])
+                R[8].TextStrokeColor3 = R[9]
+                R[11] = ENV.Enum
+                R[10] = R[11].Font
+                R[9] = R[10].SourceSans
+                R[8].Font = R[9]
+                R[9] = 13
+                R[8].TextSize = R[9]
+                R[10] = R[11].TextXAlignment
+                R[9] = R[10].Center
+                R[8].TextXAlignment = R[9]
+                R[11] = ENV.Options
+                R[10] = R[11].DistCol
+                R[9] = R[10].Value
+                R[8].TextColor3 = R[9]
+                R[10] = ENV.UDim2
+                R[9] = R[10].new
+                R[10] = 0
+                R[11] = 200
+                R[12] = 0
+                R[13] = 20
+                R[9] = R[9](R[10], R[11], R[12], R[13])
+                R[8].Size = R[9]
+                R[9] = false
+                R[8].Visible = R[9]
+                R[8].Parent = R[3]
+                R[10] = ENV.Instance
+                R[9] = R[10].new
+                R[10] = "Frame"
+                R[9] = R[9](R[10])
+                R[11] = ENV.Color3
+                R[10] = R[11].new
+                R[11] = 0
+                R[12] = 0
+                R[13] = 0
+                R[10] = R[10](R[11], R[12], R[13])
+                R[9].BackgroundColor3 = R[10]
+                R[10] = 0
+                R[9].BorderSizePixel = R[10]
+                R[10] = false
+                R[9].Visible = R[10]
+                R[10] = 1
+                R[9].ZIndex = R[10]
+                R[9].Parent = R[3]
+                R[11] = ENV.Instance
+                R[10] = R[11].new
+                R[11] = "Frame"
+                R[10] = R[10](R[11])
+                R[12] = ENV.Color3
+                R[11] = R[12].fromRGB
+                R[12] = 0
+                R[13] = 255
+                R[14] = 0
+                R[11] = R[11](R[12], R[13], R[14])
+                R[10].BackgroundColor3 = R[11]
+                R[11] = 0
+                R[10].BorderSizePixel = R[11]
+                R[11] = false
+                R[10].Visible = R[11]
+                R[11] = 2
+                R[10].ZIndex = R[11]
+                R[10].Parent = R[3]
+                R[11] = U[6][2][U[6][1]]
+                R[13] = {}
+                R[13].Gui = R[3]
+                R[12] = R[13]
+                R[11][R[1]] = R[12]
+                R[11] = nil
+                R[13] = U[5][2][U[5][1]]
+                R[12] = R[13].RenderStepped
+                R[14] = P.main_24_1({capture(9), capture(5), capture(3), capture(4), capture(8), capture(7), capture(6), capture(10), U[6], capture(11), U[4], U[2], capture(1)}, ENV)
+                R[13] = R[12]
+                R[12] = R[12].Connect
+                R[12] = R[12](R[13], R[14])
+                R[11] = R[12]
+                closeUpvalues(3)
+                closeUpvalues(3)
+                return table.unpack(R, 1, 0)
+            end
+        end
+    end
+end
+
+P.main_24_1 = function(U, ENV)
+    return function(...)
+        local R = table.create(20)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[2] = U[13][2][U[13][1]]
+        R[1] = (not R[2])
+        if R[1] then
+        else
+            R[3] = U[13][2][U[13][1]]
+            R[2] = R[3].Parent
+            R[1] = (not R[2])
+        end
+        if R[1] then
+            R[1] = U[3][2][U[3][1]]
+            R[2] = R[1]
+            R[1] = R[1].Destroy
+            R[1](R[2])
+            R[1] = U[9][2][U[9][1]]
+            R[2] = U[13][2][U[13][1]]
+            R[3] = nil
+            R[1][R[2]] = R[3]
+            R[1] = U[10][2][U[10][1]]
+            R[2] = R[1]
+            R[1] = R[1].Disconnect
+            R[1](R[2])
+            return table.unpack(R, 1, 0)
+        else
+            R[1] = U[13][2][U[13][1]]
+            R[3] = "Humanoid"
+            R[2] = R[1]
+            R[1] = R[1].FindFirstChildOfClass
+            R[1] = R[1](R[2], R[3])
+            R[2] = U[13][2][U[13][1]]
+            R[4] = "HumanoidRootPart"
+            R[3] = R[2]
+            R[2] = R[2].FindFirstChild
+            R[2] = R[2](R[3], R[4])
+            R[3] = U[13][2][U[13][1]]
+            R[5] = "Head"
+            R[4] = R[3]
+            R[3] = R[3].FindFirstChild
+            R[3] = R[3](R[4], R[5])
+            R[6] = ENV.Toggles
+            R[5] = R[6].EspMaster
+            R[4] = R[5].Value
+            if R[4] then
+                R[4] = R[1]
+            else
+            end
+            if R[4] then
+                R[5] = R[1].Health
+                R[6] = 0
+                R[4] = (R[5] > R[6])
+            else
+            end
+            if R[4] then
+                R[4] = R[2]
+            else
+            end
+            if R[4] then
+                R[4] = R[3]
+            else
+            end
+            if R[4] then
+                R[4] = U[11][2][U[11][1]]
+                R[6] = R[3].Position
+                R[8] = ENV.Vector3
+                R[7] = R[8].new
+                R[8] = 0
+                R[9] = 1.2
+                R[10] = 0
+                R[7] = R[7](R[8], R[9], R[10])
+                R[6] = (R[6] + R[7])
+                R[5] = R[4]
+                R[4] = R[4].WorldToViewportPoint
+                R[4], R[5] = R[4](R[5], R[6])
+                R[6] = U[11][2][U[11][1]]
+                R[8] = R[2].Position
+                R[10] = ENV.Vector3
+                R[9] = R[10].new
+                R[10] = 0
+                R[11] = 3.5
+                R[12] = 0
+                R[9] = R[9](R[10], R[11], R[12])
+                R[8] = (R[8] - R[9])
+                R[7] = R[6]
+                R[6] = R[6].WorldToViewportPoint
+                R[6] = R[6](R[7], R[8])
+                if R[5] then
+                    R[8] = ENV.math
+                    R[7] = R[8].abs
+                    R[8] = R[4].Y
+                    R[9] = R[6].Y
+                    R[8] = (R[8] - R[9])
+                    R[7] = R[7](R[8])
+                    R[9] = 0.6
+                    R[8] = (R[7] * R[9])
+                    R[10] = R[4].X
+                    R[12] = 2
+                    R[11] = (R[8] / R[12])
+                    R[9] = (R[10] - R[11])
+                    R[10] = R[4].Y
+                    R[11] = U[4][2][U[4][1]]
+                    R[14] = ENV.Toggles
+                    R[13] = R[14].ShowBox
+                    R[12] = R[13].Value
+                    R[11].Visible = R[12]
+                    R[11] = U[4][2][U[4][1]]
+                    R[13] = ENV.UDim2
+                    R[12] = R[13].new
+                    R[13] = 0
+                    R[14] = R[8]
+                    R[15] = 0
+                    R[16] = R[7]
+                    R[12] = R[12](R[13], R[14], R[15], R[16])
+                    R[11].Size = R[12]
+                    R[11] = U[4][2][U[4][1]]
+                    R[13] = ENV.UDim2
+                    R[12] = R[13].new
+                    R[13] = 0
+                    R[14] = R[9]
+                    R[15] = 0
+                    R[16] = R[10]
+                    R[12] = R[12](R[13], R[14], R[15], R[16])
+                    R[11].Position = R[12]
+                    R[11] = U[2][2][U[2][1]]
+                    R[14] = ENV.Options
+                    R[13] = R[14].BoxCol
+                    R[12] = R[13].Value
+                    R[11].Color = R[12]
+                    R[11] = U[7][2][U[7][1]]
+                    R[14] = ENV.Toggles
+                    R[13] = R[14].ShowFill
+                    R[12] = R[13].Value
+                    R[11].Visible = R[12]
+                    R[11] = U[7][2][U[7][1]]
+                    R[13] = ENV.UDim2
+                    R[12] = R[13].new
+                    R[13] = 0
+                    R[14] = R[8]
+                    R[15] = 0
+                    R[16] = R[7]
+                    R[12] = R[12](R[13], R[14], R[15], R[16])
+                    R[11].Size = R[12]
+                    R[11] = U[7][2][U[7][1]]
+                    R[13] = ENV.UDim2
+                    R[12] = R[13].new
+                    R[13] = 0
+                    R[14] = R[9]
+                    R[15] = 0
+                    R[16] = R[10]
+                    R[12] = R[12](R[13], R[14], R[15], R[16])
+                    R[11].Position = R[12]
+                    R[11] = U[7][2][U[7][1]]
+                    R[14] = ENV.Options
+                    R[13] = R[14].FillCol
+                    R[12] = R[13].Value
+                    R[11].BackgroundColor3 = R[12]
+                    R[11] = U[6][2][U[6][1]]
+                    R[14] = ENV.Toggles
+                    R[13] = R[14].ShowName
+                    R[12] = R[13].Value
+                    R[11].Visible = R[12]
+                    R[11] = U[6][2][U[6][1]]
+                    R[12] = U[12][2][U[12][1]]
+                    R[13] = U[13][2][U[13][1]]
+                    R[12] = R[12](R[13])
+                    R[11].Text = R[12]
+                    R[11] = U[6][2][U[6][1]]
+                    R[13] = ENV.UDim2
+                    R[12] = R[13].new
+                    R[13] = 0
+                    R[15] = R[4].X
+                    R[16] = 100
+                    R[14] = (R[15] - R[16])
+                    R[15] = 0
+                    R[16] = 20
+                    R[16] = (R[10] - R[16])
+                    R[12] = R[12](R[13], R[14], R[15], R[16])
+                    R[11].Position = R[12]
+                    R[11] = U[6][2][U[6][1]]
+                    R[14] = ENV.Options
+                    R[13] = R[14].NameCol
+                    R[12] = R[13].Value
+                    R[11].TextColor3 = R[12]
+                    R[11] = U[5][2][U[5][1]]
+                    R[14] = ENV.Toggles
+                    R[13] = R[14].ShowStuds
+                    R[12] = R[13].Value
+                    R[11].Visible = R[12]
+                    R[11] = U[5][2][U[5][1]]
+                    R[14] = ENV.math
+                    R[13] = R[14].floor
+                    R[17] = U[11][2][U[11][1]]
+                    R[16] = R[17].CFrame
+                    R[15] = R[16].Position
+                    R[16] = R[2].Position
+                    R[14] = (R[15] - R[16])
+                    R[14] = R[14].Magnitude
+                    R[13] = R[13](R[14])
+                    R[14] = " studs"
+                    R[12] = (R[13] .. R[14])
+                    R[11].Text = R[12]
+                    R[11] = U[5][2][U[5][1]]
+                    R[13] = ENV.UDim2
+                    R[12] = R[13].new
+                    R[13] = 0
+                    R[15] = R[4].X
+                    R[16] = 100
+                    R[14] = (R[15] - R[16])
+                    R[15] = 0
+                    R[16] = R[6].Y
+                    R[17] = 1
+                    R[16] = (R[16] + R[17])
+                    R[12] = R[12](R[13], R[14], R[15], R[16])
+                    R[11].Position = R[12]
+                    R[11] = U[5][2][U[5][1]]
+                    R[14] = ENV.Options
+                    R[13] = R[14].DistCol
+                    R[12] = R[13].Value
+                    R[11].TextColor3 = R[12]
+                    R[13] = ENV.Toggles
+                    R[12] = R[13].ShowHealth
+                    R[11] = R[12].Value
+                    if R[11] then
+                        R[12] = ENV.math
+                        R[11] = R[12].clamp
+                        R[13] = R[1].Health
+                        R[14] = R[1].MaxHealth
+                        R[12] = (R[13] / R[14])
+                        R[13] = 0
+                        R[14] = 1
+                        R[11] = R[11](R[12], R[13], R[14])
+                        R[12] = U[1][2][U[1][1]]
+                        R[13] = true
+                        R[12].Visible = R[13]
+                        R[12] = U[8][2][U[8][1]]
+                        R[12].Visible = R[13]
+                        R[12] = U[1][2][U[1][1]]
+                        R[14] = ENV.UDim2
+                        R[13] = R[14].new
+                        R[14] = 0
+                        R[15] = 1
+                        R[16] = 0
+                        R[17] = R[7]
+                        R[13] = R[13](R[14], R[15], R[16], R[17])
+                        R[12].Size = R[13]
+                        R[12] = U[1][2][U[1][1]]
+                        R[14] = ENV.UDim2
+                        R[13] = R[14].new
+                        R[14] = 0
+                        R[16] = 6
+                        R[15] = (R[9] - R[16])
+                        R[16] = 0
+                        R[17] = R[10]
+                        R[13] = R[13](R[14], R[15], R[16], R[17])
+                        R[12].Position = R[13]
+                        R[12] = U[8][2][U[8][1]]
+                        R[14] = ENV.UDim2
+                        R[13] = R[14].new
+                        R[14] = 0
+                        R[15] = 1
+                        R[16] = 0
+                        R[17] = (R[7] * R[11])
+                        R[13] = R[13](R[14], R[15], R[16], R[17])
+                        R[12].Size = R[13]
+                        R[12] = U[8][2][U[8][1]]
+                        R[14] = ENV.UDim2
+                        R[13] = R[14].new
+                        R[14] = 0
+                        R[16] = 6
+                        R[15] = (R[9] - R[16])
+                        R[16] = 0
+                        R[19] = 1
+                        R[18] = (R[19] - R[11])
+                        R[17] = (R[7] * R[18])
+                        R[17] = (R[10] + R[17])
+                        R[13] = R[13](R[14], R[15], R[16], R[17])
+                        R[12].Position = R[13]
+                        R[12] = U[8][2][U[8][1]]
+                        R[14] = ENV.Color3
+                        R[13] = R[14].fromHSV
+                        R[15] = 0.33
+                        R[14] = (R[11] * R[15])
+                        R[15] = 1
+                        R[16] = 1
+                        R[13] = R[13](R[14], R[15], R[16])
+                        R[12].BackgroundColor3 = R[13]
+                    else
+                        R[11] = U[1][2][U[1][1]]
+                        R[12] = false
+                        R[11].Visible = R[12]
+                        R[11] = U[8][2][U[8][1]]
+                        R[11].Visible = R[12]
+                    end
+                    return table.unpack(R, 1, 0)
+                else
+                    R[4] = U[4][2][U[4][1]]
+                    R[5] = false
+                    R[4].Visible = R[5]
+                    R[4] = U[7][2][U[7][1]]
+                    R[4].Visible = R[5]
+                    R[4] = U[6][2][U[6][1]]
+                    R[4].Visible = R[5]
+                    R[4] = U[5][2][U[5][1]]
+                    R[4].Visible = R[5]
+                    R[4] = U[1][2][U[1][1]]
+                    R[4].Visible = R[5]
+                    R[4] = U[8][2][U[8][1]]
+                    R[4].Visible = R[5]
+                    return table.unpack(R, 1, 0)
+                end
+            else
+                R[4] = U[4][2][U[4][1]]
+                R[5] = false
+                R[4].Visible = R[5]
+                R[4] = U[7][2][U[7][1]]
+                R[4].Visible = R[5]
+                R[4] = U[6][2][U[6][1]]
+                R[4].Visible = R[5]
+                R[4] = U[5][2][U[5][1]]
+                R[4].Visible = R[5]
+                R[4] = U[1][2][U[1][1]]
+                R[4].Visible = R[5]
+                R[4] = U[8][2][U[8][1]]
+                R[4].Visible = R[5]
+                return table.unpack(R, 1, 0)
+            end
+        end
+    end
+end
+
+P.main_25 = function(U, ENV)
+    return function(...)
+        local R = table.create(4)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = U[1][2][U[1][1]]
+        R[2] = R[3].KeybindFrame
+        if R[2] then
+            R[3] = U[1][2][U[1][1]]
+            R[2] = R[3].KeybindFrame
+            R[2].Visible = R[1]
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_26 = function(U, ENV)
+    return function(...)
+        local R = table.create(3)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[2] = ENV.task
+        R[1] = R[2].wait
+        R[2] = 0.5
+        R[1](R[2])
+        R[2] = ENV.table
+        R[1] = R[2].clear
+        R[2] = U[2][2][U[2][1]]
+        R[1](R[2])
+        R[1] = U[1][2][U[1][1]]
+        R[1]()
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_27 = function(U, ENV)
+    return function(...)
+        local R = table.create(15)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[3] = U[1][2][U[1][1]]
+                R[2] = R[3][R[1]]
+                if R[2] then block = 4 else block = 5 end
+            elseif block == 4 then
+                return table.unpack(R, 1, 0)
+            elseif block == 5 then
+                R[2] = nil
+                R[3] = ENV.pairs
+                R[5] = R[1]
+                R[4] = R[1].GetChildren
+                do
+                    local values = table.pack(R[4](R[5]))
+                    table.move(values, 1, values.n, 4, R)
+                    TOP = 4 + values.n - 1
+                end
+                R[3], R[4], R[5] = R[3](table.unpack(R, 4, TOP))
+                R[3], R[4], R[5] = normalizeIterator(R[3], R[4], R[5])
+                R[6], R[7] = R[3](R[4], R[5])
+                R[5] = R[6]
+                if (R[5] == nil) then block = 14 else block = 10 end
+            elseif block == 10 then
+                R[10] = "Folder"
+                R[9] = R[7]
+                R[8] = R[7].IsA
+                R[8] = R[8](R[9], R[10])
+                if R[8] then block = 16 else block = 20 end
+            elseif block == 14 then
+                R[3] = (not R[2])
+                if R[3] then block = 21 else block = 22 end
+            elseif block == 16 then
+                R[9] = R[7].Name
+                R[10] = "Group"
+                R[8] = (R[9] == R[10])
+                block = 20
+            elseif block == 20 then
+                if R[8] then block = 135 else block = 140 end
+            elseif block == 21 then
+                return table.unpack(R, 1, 0)
+            elseif block == 22 then
+                R[4] = ENV.Instance
+                R[3] = R[4].new
+                R[4] = "Highlight"
+                R[3] = R[3](R[4])
+                R[3].Adornee = R[2]
+                R[5] = ENV.Color3
+                R[4] = R[5].fromRGB
+                R[5] = 0
+                R[6] = 255
+                R[7] = 100
+                R[4] = R[4](R[5], R[6], R[7])
+                R[3].FillColor = R[4]
+                R[4] = 0.5
+                R[3].FillTransparency = R[4]
+                R[5] = ENV.Color3
+                R[4] = R[5].fromRGB
+                R[5] = 255
+                R[6] = 50
+                R[7] = 50
+                R[4] = R[4](R[5], R[6], R[7])
+                R[3].OutlineColor = R[4]
+                R[4] = 0
+                R[3].OutlineTransparency = R[4]
+                R[4] = ENV.game
+                R[6] = "CoreGui"
+                R[5] = R[4]
+                R[4] = R[4].GetService
+                R[4] = R[4](R[5], R[6])
+                R[3].Parent = R[4]
+                R[5] = ENV.Instance
+                R[4] = R[5].new
+                R[5] = "BillboardGui"
+                R[4] = R[4](R[5])
+                R[4].Adornee = R[2]
+                R[6] = ENV.UDim2
+                R[5] = R[6].new
+                R[6] = 0
+                R[7] = 200
+                R[8] = 0
+                R[9] = 50
+                R[5] = R[5](R[6], R[7], R[8], R[9])
+                R[4].Size = R[5]
+                R[6] = ENV.Vector3
+                R[5] = R[6].new
+                R[6] = 0
+                R[7] = 4
+                R[8] = 0
+                R[5] = R[5](R[6], R[7], R[8])
+                R[4].StudsOffset = R[5]
+                R[5] = true
+                R[4].AlwaysOnTop = R[5]
+                R[6] = ENV.math
+                R[5] = R[6].huge
+                R[4].MaxDistance = R[5]
+                R[5] = ENV.game
+                R[7] = "CoreGui"
+                R[6] = R[5]
+                R[5] = R[5].GetService
+                R[5] = R[5](R[6], R[7])
+                R[4].Parent = R[5]
+                R[6] = ENV.Instance
+                R[5] = R[6].new
+                R[6] = "TextLabel"
+                R[5] = R[5](R[6])
+                R[7] = ENV.UDim2
+                R[6] = R[7].new
+                R[7] = 1
+                R[8] = 0
+                R[9] = 1
+                R[10] = 0
+                R[6] = R[6](R[7], R[8], R[9], R[10])
+                R[5].Size = R[6]
+                R[6] = 1
+                R[5].BackgroundTransparency = R[6]
+                R[7] = ENV.Color3
+                R[6] = R[7].fromRGB
+                R[7] = 255
+                R[8] = 255
+                R[9] = 255
+                R[6] = R[6](R[7], R[8], R[9])
+                R[5].TextColor3 = R[6]
+                R[6] = 0.4
+                R[5].TextStrokeTransparency = R[6]
+                R[8] = ENV.Enum
+                R[7] = R[8].Font
+                R[6] = R[7].GothamBold
+                R[5].Font = R[6]
+                R[6] = true
+                R[5].TextScaled = R[6]
+                R[5].Parent = R[4]
+                R[7] = ENV.Drawing
+                R[6] = R[7].new
+                R[7] = "Line"
+                R[6] = R[6](R[7])
+                R[7] = 1.5
+                R[6].Thickness = R[7]
+                R[8] = ENV.Color3
+                R[7] = R[8].fromRGB
+                R[8] = 0
+                R[9] = 255
+                R[10] = 100
+                R[7] = R[7](R[8], R[9], R[10])
+                R[6].Color = R[7]
+                R[7] = false
+                R[6].Visible = R[7]
+                R[7] = U[1][2][U[1][1]]
+                R[9] = {}
+                R[9].highlight = R[3]
+                R[9].billboard = R[4]
+                R[9].label = R[5]
+                R[9].tracer = R[6]
+                R[9].part = R[2]
+                R[8] = R[9]
+                R[7][R[1]] = R[8]
+                return table.unpack(R, 1, 0)
+            elseif block == 135 then
+                R[8] = ENV.pairs
+                R[10] = R[7]
+                R[9] = R[7].GetChildren
+                do
+                    local values = table.pack(R[9](R[10]))
+                    table.move(values, 1, values.n, 9, R)
+                    TOP = 9 + values.n - 1
+                end
+                R[8], R[9], R[10] = R[8](table.unpack(R, 9, TOP))
+                R[8], R[9], R[10] = normalizeIterator(R[8], R[9], R[10])
+                R[11], R[12] = R[8](R[9], R[10])
+                R[10] = R[11]
+                if (R[10] == nil) then block = 140 else block = 141 end
+            elseif block == 140 then
+                if R[2] then block = 14 else block = 147 end
+            elseif block == 141 then
+                R[15] = "BasePart"
+                R[14] = R[12]
+                R[13] = R[12].IsA
+                R[13] = R[13](R[14], R[15])
+                if R[13] then block = 145 else block = 148 end
+            elseif block == 145 then
+                R[2] = R[12]
+                block = 140
+            elseif block == 147 then
+                R[6], R[7] = R[3](R[4], R[5])
+                R[5] = R[6]
+                if (R[5] == nil) then block = 14 else block = 10 end
+            elseif block == 148 then
+                R[11], R[12] = R[8](R[9], R[10])
+                R[10] = R[11]
+                if (R[10] == nil) then block = 140 else block = 141 end
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_28 = function(U, ENV)
+    return function(...)
+        local R = table.create(4)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[2] = U[1][2][U[1][1]]
+        R[4] = R[1]
+        R[3] = R[2]
+        R[2] = R[2].SetWatermarkVisibility
+        R[2](R[3], R[4])
+        return table.unpack(R, 1, 0)
+    end
+end
+
+P.main_29 = function(U, ENV)
+    return function(...)
+        local R = table.create(18)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 0, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        local block = 1
+        while true do
+            if block == 1 then
+                R[3] = ENV.Toggles
+                R[2] = R[3].CorpseESP
+                R[1] = (not R[2])
+                if R[1] then block = 5 else block = 6 end
+            elseif block == 5 then
+                if R[1] then block = 11 else block = 15 end
+            elseif block == 6 then
+                R[4] = ENV.Toggles
+                R[3] = R[4].CorpseESP
+                R[2] = R[3].Value
+                R[1] = (not R[2])
+                block = 5
+            elseif block == 11 then
+                R[1] = ENV.pairs
+                R[2] = U[2][2][U[2][1]]
+                R[1], R[2], R[3] = R[1](R[2])
+                R[1], R[2], R[3] = normalizeIterator(R[1], R[2], R[3])
+                R[4], R[5] = R[1](R[2], R[3])
+                R[3] = R[4]
+                if (R[3] == nil) then block = 26 else block = 20 end
+            elseif block == 15 then
+                R[2] = ENV.workspace
+                R[1] = R[2].CurrentCamera
+                R[3] = U[3][2][U[3][1]]
+                R[2] = R[3].Character
+                if R[2] then block = 27 else block = 33 end
+            elseif block == 20 then
+                R[6] = R[5].name
+                R[7] = false
+                R[6].Visible = R[7]
+                R[6] = R[5].highlight
+                R[6].Enabled = R[7]
+                R[4], R[5] = R[1](R[2], R[3])
+                R[3] = R[4]
+                if (R[3] == nil) then block = 26 else block = 20 end
+            elseif block == 26 then
+                return table.unpack(R, 1, 0)
+            elseif block == 27 then
+                R[3] = U[3][2][U[3][1]]
+                R[2] = R[3].Character
+                R[4] = "HumanoidRootPart"
+                R[3] = R[2]
+                R[2] = R[2].FindFirstChild
+                R[2] = R[2](R[3], R[4])
+                block = 33
+            elseif block == 33 then
+                R[3] = ENV.pairs
+                R[4] = U[2][2][U[2][1]]
+                R[3], R[4], R[5] = R[3](R[4])
+                R[3], R[4], R[5] = normalizeIterator(R[3], R[4], R[5])
+                R[6], R[7] = R[3](R[4], R[5])
+                R[5] = R[6]
+                if (R[5] == nil) then block = 40 else block = 38 end
+            elseif block == 38 then
+                R[8] = (not R[6])
+                if R[8] then block = 41 else block = 42 end
+            elseif block == 40 then
+                return table.unpack(R, 1, 0)
+            elseif block == 41 then
+                if R[8] then block = 45 else block = 46 end
+            elseif block == 42 then
+                R[9] = R[6].Parent
+                R[8] = (not R[9])
+                block = 41
+            elseif block == 45 then
+                if R[8] then block = 51 else block = 54 end
+            elseif block == 46 then
+                R[9] = U[4][2][U[4][1]]
+                R[10] = R[6].Name
+                R[9] = R[9](R[10])
+                R[8] = (not R[9])
+                block = 45
+            elseif block == 51 then
+                R[8] = U[1][2][U[1][1]]
+                R[9] = R[6]
+                R[8](R[9])
+                block = 59
+            elseif block == 54 then
+                R[10] = "HumanoidRootPart"
+                R[9] = R[6]
+                R[8] = R[6].FindFirstChild
+                R[8] = R[8](R[9], R[10])
+                R[9] = (not R[8])
+                if R[9] then block = 60 else block = 61 end
+            elseif block == 59 then
+                R[6], R[7] = R[3](R[4], R[5])
+                R[5] = R[6]
+                if (R[5] == nil) then block = 40 else block = 38 end
+            elseif block == 60 then
+                if R[9] then block = 63 else block = 69 end
+            elseif block == 61 then
+                R[9] = (not R[2])
+                block = 60
+            elseif block == 63 then
+                R[9] = R[7].name
+                R[10] = false
+                R[9].Visible = R[10]
+                R[9] = R[7].highlight
+                R[9].Enabled = R[10]
+                block = 59
+            elseif block == 69 then
+                R[11] = R[8].Position
+                R[10] = R[1]
+                R[9] = R[1].WorldToViewportPoint
+                R[9], R[10] = R[9](R[10], R[11])
+                R[13] = R[2].Position
+                R[14] = R[8].Position
+                R[12] = (R[13] - R[14])
+                R[11] = R[12].Magnitude
+                R[12] = R[10]
+                if R[12] then block = 78 else block = 81 end
+            elseif block == 78 then
+                R[14] = ENV.Options
+                R[13] = R[14].CorpseDistance
+                if R[13] then block = 82 else block = 86 end
+            elseif block == 81 then
+                if R[12] then block = 87 else block = 111 end
+            elseif block == 82 then
+                R[15] = ENV.Options
+                R[14] = R[15].CorpseDistance
+                R[13] = R[14].Value
+                block = 86
+            elseif block == 86 then
+                if R[13] then block = 117 else block = 119 end
+            elseif block == 87 then
+                R[12] = R[7].name
+                R[14] = ENV.string
+                R[13] = R[14].format
+                R[14] = "%s [%d]"
+                R[15] = R[6].Name
+                R[17] = ENV.math
+                R[16] = R[17].floor
+                R[17] = R[11]
+                do
+                    local values = table.pack(R[16](R[17]))
+                    table.move(values, 1, values.n, 16, R)
+                    TOP = 16 + values.n - 1
+                end
+                R[13] = R[13](table.unpack(R, 14, TOP))
+                R[12].Text = R[13]
+                R[12] = R[7].name
+                R[14] = ENV.Vector2
+                R[13] = R[14].new
+                R[14] = R[9].X
+                R[15] = R[9].Y
+                R[16] = 40
+                R[15] = (R[15] - R[16])
+                R[13] = R[13](R[14], R[15])
+                R[12].Position = R[13]
+                R[12] = R[7].name
+                R[14] = ENV.Toggles
+                R[13] = R[14].CorpseNames
+                if R[13] then block = 121 else block = 125 end
+            elseif block == 111 then
+                R[12] = R[7].name
+                R[13] = false
+                R[12].Visible = R[13]
+                R[12] = R[7].highlight
+                R[12].Enabled = R[13]
+                block = 59
+            elseif block == 117 then
+                R[12] = (R[11] <= R[13])
+                block = 81
+            elseif block == 119 then
+                R[13] = 10000
+                block = 117
+            elseif block == 121 then
+                R[15] = ENV.Toggles
+                R[14] = R[15].CorpseNames
+                R[13] = R[14].Value
+                block = 125
+            elseif block == 125 then
+                if R[13] then block = 126 else block = 131 end
+            elseif block == 126 then
+                R[12].Visible = R[13]
+                R[12] = R[7].highlight
+                R[14] = ENV.Toggles
+                R[13] = R[14].CorpseHighlight
+                if R[13] then block = 133 else block = 137 end
+            elseif block == 131 then
+                R[13] = true
+                block = 126
+            elseif block == 133 then
+                R[15] = ENV.Toggles
+                R[14] = R[15].CorpseHighlight
+                R[13] = R[14].Value
+                block = 137
+            elseif block == 137 then
+                if R[13] then block = 138 else block = 140 end
+            elseif block == 138 then
+                R[12].Enabled = R[13]
+                block = 59
+            elseif block == 140 then
+                R[13] = true
+                block = 138
+            else
+                error("Invalid reconstructed block: " .. tostring(block))
+            end
+        end
+    end
+end
+
+P.main_30 = function(U, ENV)
+    return function(...)
+        local R = table.create(4)
+        local arguments = table.pack(...)
+        table.move(arguments, 1, 1, 1, R)
+        local TOP = -1
+        local open = {}
+        local function capture(slot)
+            if not open[slot] then open[slot] = {slot, R} end
+            return open[slot]
+        end
+        local function closeUpvalues(first)
+            for slot, cell in pairs(open) do
+                if slot >= first then
+                    cell[3] = cell[2][cell[1]]
+                    cell[2], cell[1] = cell, 3
+                    open[slot] = nil
+                end
+            end
+        end
+        R[3] = ENV.task
+        R[2] = R[3].wait
+        R[3] = 0.1
+        R[2](R[3])
+        R[4] = "Model"
+        R[3] = R[1]
+        R[2] = R[1].IsA
+        R[2] = R[2](R[3], R[4])
+        if R[2] then
+            R[2] = U[1][2][U[1][1]]
+            R[3] = R[1]
+            R[2](R[3])
+        else
+        end
+        return table.unpack(R, 1, 0)
+    end
+end
+
+return P.main({}, getfenv())(...)
